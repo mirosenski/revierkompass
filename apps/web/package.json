@@ -11,8 +11,10 @@
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
 	},
 	"dependencies": {
+		"@tanstack/router": "0.0.1-beta.174",
 		"react": "^19.0.0",
-		"react-dom": "^19.0.0"
+		"react-dom": "^19.0.0",
+		"react-router": "npm:@tanstack/router@0.0.1-beta.53"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.1.10",

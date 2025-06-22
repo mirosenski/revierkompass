@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
+    "@tanstack/router": "0.0.1-beta.174",
+    "react-router": "npm:@tanstack/router@0.0.1-beta.53",
     "tailwindcss": "^4.1.10"
   }
 }
