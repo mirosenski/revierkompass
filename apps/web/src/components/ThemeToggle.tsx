@@ -6,7 +6,10 @@ type Theme = "light" | "dark" | "system";
 export function ThemeToggle() {
 	const [theme, setTheme] = useState<Theme>(() => {
 		const saved = localStorage.getItem("theme");
-		return (saved as Theme) || "system";
+		if (saved === "light" || saved === "dark") {
+			return saved as Theme;
+		}
+		return "system";
 	});
 
 	const [mounted, setMounted] = useState(false);

@@ -6,7 +6,7 @@ export function useTheme() {
 	const [theme, setTheme] = useState<Theme>(() => {
 		try {
 			const saved = localStorage.getItem("theme");
-			if (saved && ["light", "dark", "system"].includes(saved)) {
+			if (saved === "light" || saved === "dark") {
 				return saved as Theme;
 			}
 		} catch (error) {

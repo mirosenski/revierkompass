@@ -1,4 +1,4 @@
-import type * as React from "react";
+import * as React from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
@@ -320,15 +320,17 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 
 	return (
 		<div className={cn("relative", className)}>
-			{/* Trigger Button - jetzt ein echtes <button> für Barrierefreiheit */}
-			<button
-				type="button"
-				className="appearance-none bg-transparent border-none p-0 m-0 text-inherit"
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
-			>
-				{trigger}
-			</button>
+			{/* Trigger-Button: Events direkt an das Trigger-Element weitergeben, kein Wrapper-Button! */}
+			{React.isValidElement(trigger)
+				? React.cloneElement(trigger, {
+					onMouseEnter: handleMouseEnter,
+					onMouseLeave: handleMouseLeave,
+					'aria-expanded': dropdownOpen,
+					'aria-haspopup': 'true',
+					'aria-controls': dropdownMenuId,
+					'data-state': dropdownOpen ? 'open' : 'closed',
+				})
+				: trigger}
 
 			{/* Dropdown Content */}
 			{dropdownOpen && (

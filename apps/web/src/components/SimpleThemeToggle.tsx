@@ -7,12 +7,13 @@ export function SimpleThemeToggle() {
 			const savedTheme = localStorage.getItem("theme");
 			if (savedTheme === "dark") return true;
 			if (savedTheme === "light") return false;
+			// Wenn "system" oder nichts gespeichert ist, verwende System-Theme
 		} catch (error) {
 			console.warn("localStorage nicht verfügbar:", error);
 		}
 
 		// Fallback zu System-Theme
-		return document.documentElement.classList.contains("dark");
+		return window.matchMedia("(prefers-color-scheme: dark)").matches;
 	});
 
 	const toggleTheme = () => {

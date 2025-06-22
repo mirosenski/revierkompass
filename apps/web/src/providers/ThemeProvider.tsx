@@ -11,11 +11,17 @@ const ThemeContext = createContext<ThemeCtx | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
 	const [theme, setThemeState] = useState<Theme>(() => {
-		// Sofort beim ersten Render das localStorage lesen
+		// Beim ersten Start immer "system" verwenden
+		// Nur wenn der Benutzer explizit ein Theme gewählt hat, wird es verwendet
 		try {
 			const saved = localStorage.getItem("rk-theme") as Theme;
 			console.log("Initial theme from localStorage:", saved);
-			return saved || "system";
+			// Wenn "system" gespeichert ist oder nichts gespeichert ist, verwende "system"
+			// Nur wenn explizit "light" oder "dark" gewählt wurde, verwende das
+			if (saved === "light" || saved === "dark") {
+				return saved;
+			}
+			return "system"; // ← Immer "system" als Standard
 		} catch {
 			console.log("No localStorage, using system");
 			return "system";

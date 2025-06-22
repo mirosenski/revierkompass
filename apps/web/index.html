@@ -6,6 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
     <title>RevierKompass</title>
+    <script>
+      // Verhindert FOUC und verwendet beim ersten Start immer System-Theme
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('rk-theme');
+          const root = document.documentElement;
+          
+          // Nur wenn explizit "light" oder "dark" gewählt wurde, verwende das
+          // Ansonsten immer System-Theme
+          if (savedTheme === 'light') {
+            root.classList.add('light');
+          } else if (savedTheme === 'dark') {
+            root.classList.add('dark');
+          } else {
+            // System theme - Standard beim ersten Start
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              root.classList.add('dark');
+            } else {
+              root.classList.add('light');
+            }
+          }
+        } catch (error) {
+          // Fallback zu System-Theme
+          const root = document.documentElement;
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            root.classList.add('dark');
+          } else {
+            root.classList.add('light');
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
