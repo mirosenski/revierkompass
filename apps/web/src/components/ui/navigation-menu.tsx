@@ -1,8 +1,15 @@
 import type * as React from "react";
+import {
+       cloneElement,
+       isValidElement,
+       useEffect,
+       useId,
+       useRef,
+       useState,
+} from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect, useId } from "react";
 
 // Navigation Menu Root - Container für das gesamte Navigation Menu
 function NavigationMenu({ className, children, ...props }: React.ComponentProps<"div">) {
@@ -128,30 +135,35 @@ interface HoverNavigationMenuProps {
 }
 
 function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMenuProps) {
-	const [dropdownOpen, setDropdownOpen] = useState(false);
-	const [isKeyboardUser, setIsKeyboardUser] = useState(false);
-	const dropdownRef = useRef<HTMLDivElement>(null);
-	const triggerRef = useRef<HTMLButtonElement>(null);
-	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const dropdownMenuId = useId();
+       const [dropdownOpen, setDropdownOpen] = useState(false);
+       const [isKeyboardUser, setIsKeyboardUser] = useState(false);
+       const dropdownRef = useRef<HTMLDivElement>(null);
+       const triggerRef = useRef<HTMLButtonElement>(null);
+       const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+       const dropdownMenuId = useId();
 
-	// Keyboard detection
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === "Tab" || e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Escape") {
-				setIsKeyboardUser(true);
-			}
-		};
+       // Keyboard detection to differentiate between pointer and keyboard users
+       useEffect(() => {
+               const handleDocumentKeyDown = (e: KeyboardEvent) => {
+                       if (
+                               e.key === "Tab" ||
+                               e.key === "ArrowUp" ||
+                               e.key === "ArrowDown" ||
+                               e.key === "Escape"
+                       ) {
+                               setIsKeyboardUser(true);
+                       }
+               };
 
 		const handleMouseDown = () => {
 			setIsKeyboardUser(false);
 		};
 
-		document.addEventListener("keydown", handleKeyDown);
+               document.addEventListener("keydown", handleDocumentKeyDown);
 		document.addEventListener("mousedown", handleMouseDown);
 
 		return () => {
-			document.removeEventListener("keydown", handleKeyDown);
+                       document.removeEventListener("keydown", handleDocumentKeyDown);
 			document.removeEventListener("mousedown", handleMouseDown);
 		};
 	}, []);
@@ -167,13 +179,40 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 		setDropdownOpen(true);
 	};
 
-	const handleMouseLeave = () => {
-		if (isKeyboardUser) return;
+       const handleMouseLeave = () => {
+               if (isKeyboardUser) return;
 
-		timeoutRef.current = setTimeout(() => {
-			setDropdownOpen(false);
-		}, 150);
-	};
+               timeoutRef.current = setTimeout(() => {
+                       setDropdownOpen(false);
+               }, 150);
+       };
+
+       // Keyboard interactions for the trigger
+       const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+               switch (e.key) {
+                       case "Enter":
+                       case " ": // Space
+                       case "ArrowDown":
+                               e.preventDefault();
+                               setDropdownOpen(true);
+                               setTimeout(() => {
+                                       const firstItem = dropdownRef.current?.querySelector<HTMLElement>(
+                                               '[role="menuitem"]',
+                                       );
+                                       firstItem?.focus();
+                               }, 0);
+                               break;
+                       case "Escape":
+                               setDropdownOpen(false);
+                               triggerRef.current?.focus();
+                               break;
+               }
+       };
+
+       // Toggle dropdown on mouse click
+       const handleClick = () => {
+               setDropdownOpen((prev) => !prev);
+       };
 
 	// Focus management für Dropdown
 	const handleDropdownKeyDown = (e: React.KeyboardEvent) => {
@@ -223,12 +262,34 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 		};
 	}, []);
 
-	return (
-		<div className={cn("relative", className)}>
-			{/* Trigger Button - direkt den trigger verwenden */}
-			<span role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-				{trigger}
-			</span>
+       return (
+               <div className={cn("relative", className)}>
+                       {/* Trigger Button - direkt den übergebenen Trigger nutzen */}
+                       {isValidElement(trigger)
+                               ? cloneElement(trigger, {
+                                       ref: triggerRef,
+                                       onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
+                                               trigger.props.onClick?.(e);
+                                               handleClick();
+                                       },
+                                       onKeyDown: (e: React.KeyboardEvent<HTMLButtonElement>) => {
+                                               trigger.props.onKeyDown?.(e);
+                                               handleTriggerKeyDown(e);
+                                       },
+                                       onMouseEnter: (e: React.MouseEvent<HTMLButtonElement>) => {
+                                               trigger.props.onMouseEnter?.(e);
+                                               handleMouseEnter();
+                                       },
+                                       onMouseLeave: (e: React.MouseEvent<HTMLButtonElement>) => {
+                                               trigger.props.onMouseLeave?.(e);
+                                               handleMouseLeave();
+                                       },
+                                       "aria-expanded": dropdownOpen,
+                                       "aria-haspopup": "true",
+                                       "aria-controls": dropdownMenuId,
+                                       "data-state": dropdownOpen ? "open" : "closed",
+                               })
+                               : trigger}
 
 			{/* Dropdown Content */}
 			{dropdownOpen && (
