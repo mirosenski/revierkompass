@@ -21,8 +21,8 @@ export default function AboutPage() {
 					</h1>
 
 					<p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-10 text-shadow-sm text-shadow-black/10 dark:text-shadow-white/5">
-						RevierKompass revolutioniert die Art, wie Sie zu Polizeirevieren navigieren. 
-						Mit modernster Technologie und einem Fokus auf Benutzerfreundlichkeit.
+						RevierKompass revolutioniert die Art, wie Sie zu Polizeirevieren navigieren. Mit
+						modernster Technologie und einem Fokus auf Benutzerfreundlichkeit.
 					</p>
 				</div>
 
@@ -33,8 +33,9 @@ export default function AboutPage() {
 							Unsere Mission
 						</h2>
 						<p className="text-lg text-gray-600 dark:text-gray-400 mb-6 text-shadow-sm text-shadow-black/5">
-							Wir machen es einfacher, schneller und sicherer, das richtige Polizeirevier zu finden. 
-							Mit über 1.337 Revieren in Deutschland bieten wir die umfassendste Datenbank ihrer Art.
+							Wir machen es einfacher, schneller und sicherer, das richtige Polizeirevier zu finden.
+							Mit über 1.337 Revieren in Deutschland bieten wir die umfassendste Datenbank ihrer
+							Art.
 						</p>
 						<div className="space-y-4">
 							<div className="flex items-center gap-3">
@@ -51,7 +52,7 @@ export default function AboutPage() {
 							</div>
 						</div>
 					</div>
-					
+
 					<div className="relative">
 						<div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-8 text-white">
 							<div className="mask-radial-from-transparent mask-radial-to-black mask-radial-at-center opacity-10 absolute inset-0"></div>
@@ -84,7 +85,9 @@ export default function AboutPage() {
 						<div className="rounded-lg bg-blue-100 dark:bg-blue-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-blue-500/30 inverted-colors:drop-shadow-none">
 							<Zap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
 						</div>
-						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">Blitzschnell</h3>
+						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">
+							Blitzschnell
+						</h3>
 						<p className="text-gray-600 dark:text-gray-400 text-sm">
 							Routenberechnung in unter 100ms dank WebAssembly-Technologie.
 						</p>
@@ -94,7 +97,9 @@ export default function AboutPage() {
 						<div className="rounded-lg bg-green-100 dark:bg-green-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-green-500/30 inverted-colors:drop-shadow-none">
 							<Shield className="h-8 w-8 text-green-600 dark:text-green-400" />
 						</div>
-						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">Sicher & Privat</h3>
+						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">
+							Sicher & Privat
+						</h3>
 						<p className="text-gray-600 dark:text-gray-400 text-sm">
 							Alle Daten werden lokal verarbeitet und niemals an Dritte weitergegeben.
 						</p>
@@ -104,7 +109,9 @@ export default function AboutPage() {
 						<div className="rounded-lg bg-purple-100 dark:bg-purple-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-purple-500/30 inverted-colors:drop-shadow-none">
 							<MapPin className="h-8 w-8 text-purple-600 dark:text-purple-400" />
 						</div>
-						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">Offline-fähig</h3>
+						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">
+							Offline-fähig
+						</h3>
 						<p className="text-gray-600 dark:text-gray-400 text-sm">
 							Funktioniert auch ohne Internetverbindung als Progressive Web App.
 						</p>
@@ -114,7 +121,9 @@ export default function AboutPage() {
 						<div className="rounded-lg bg-orange-100 dark:bg-orange-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-orange-500/30 inverted-colors:drop-shadow-none">
 							<Users className="h-8 w-8 text-orange-600 dark:text-orange-400" />
 						</div>
-						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">Benutzerfreundlich</h3>
+						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">
+							Benutzerfreundlich
+						</h3>
 						<p className="text-gray-600 dark:text-gray-400 text-sm">
 							Intuitive Bedienung für alle Altersgruppen und Technologie-Level.
 						</p>
@@ -124,7 +133,9 @@ export default function AboutPage() {
 						<div className="rounded-lg bg-red-100 dark:bg-red-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-red-500/30 inverted-colors:drop-shadow-none">
 							<Award className="h-8 w-8 text-red-600 dark:text-red-400" />
 						</div>
-						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">Aktuell & Zuverlässig</h3>
+						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">
+							Aktuell & Zuverlässig
+						</h3>
 						<p className="text-gray-600 dark:text-gray-400 text-sm">
 							Tägliche Updates der Revierdaten für maximale Genauigkeit.
 						</p>
@@ -134,7 +145,9 @@ export default function AboutPage() {
 						<div className="rounded-lg bg-indigo-100 dark:bg-indigo-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-indigo-500/30 inverted-colors:drop-shadow-none">
 							<Globe className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
 						</div>
-						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">Deutschlandweit</h3>
+						<h3 className="text-lg font-semibold mb-2 text-shadow-sm text-shadow-black/10">
+							Deutschlandweit
+						</h3>
 						<p className="text-gray-600 dark:text-gray-400 text-sm">
 							Abdeckung aller 16 Bundesländer mit 1.337 Polizeirevieren.
 						</p>
@@ -149,7 +162,9 @@ export default function AboutPage() {
 							<p className="text-blue-100">Polizeireviere</p>
 						</div>
 						<div>
-							<p className="text-4xl font-bold mb-2 text-shadow-lg text-shadow-black/30">&lt;100ms</p>
+							<p className="text-4xl font-bold mb-2 text-shadow-lg text-shadow-black/30">
+								&lt;100ms
+							</p>
 							<p className="text-blue-100">Antwortzeit</p>
 						</div>
 						<div>
@@ -165,8 +180,8 @@ export default function AboutPage() {
 						Bereit für die Zukunft?
 					</h2>
 					<p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto text-shadow-sm text-shadow-black/5">
-						Erleben Sie die nächste Generation der Routenplanung. 
-						Schnell, sicher und immer verfügbar.
+						Erleben Sie die nächste Generation der Routenplanung. Schnell, sicher und immer
+						verfügbar.
 					</p>
 					<div className="flex flex-col sm:flex-row gap-4 justify-center">
 						<Button

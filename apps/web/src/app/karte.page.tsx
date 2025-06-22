@@ -21,24 +21,16 @@ export default function KartePage() {
 							<ArrowLeft className="mr-2 h-4 w-4 pointer-coarse:h-5 pointer-coarse:w-5" />
 							Zurück
 						</Button>
-						
+
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-white text-shadow-sm text-shadow-black/10">
 							Kartenansicht
 						</h1>
-						
+
 						<div className="flex gap-2">
-							<Button
-								variant="outline"
-								size="sm"
-								className="pointer-coarse:p-3"
-							>
+							<Button variant="outline" size="sm" className="pointer-coarse:p-3">
 								<ZoomOut className="h-4 w-4 pointer-coarse:h-5 pointer-coarse:w-5" />
 							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								className="pointer-coarse:p-3"
-							>
+							<Button variant="outline" size="sm" className="pointer-coarse:p-3">
 								<ZoomIn className="h-4 w-4 pointer-coarse:h-5 pointer-coarse:w-5" />
 							</Button>
 						</div>
@@ -53,10 +45,10 @@ export default function KartePage() {
 					{/* Erweiterte Masking-Effekte */}
 					<div className="absolute inset-0 mask-radial-from-transparent mask-radial-to-black mask-radial-at-center opacity-20" />
 					<div className="absolute inset-0 mask-b-from-50% mask-radial-[50%_90%] mask-radial-from-80% opacity-10" />
-					
+
 					{/* Grid Pattern */}
 					<div className="absolute inset-0 bg-grid-gray-300/50 dark:bg-grid-gray-600/50 [mask-image:radial-gradient(ellipse_at_center,transparent_30%,black)]" />
-					
+
 					{/* Center Content */}
 					<div className="absolute inset-0 flex items-center justify-center">
 						<div className="text-center">
