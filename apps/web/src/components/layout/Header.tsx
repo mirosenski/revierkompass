@@ -19,31 +19,35 @@ export function Header() {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (!mobileMenuOpen) return;
 
-			const menuItems = mobileMenuRef.current?.querySelectorAll('a, button') as NodeListOf<HTMLElement>;
-			const currentIndex = Array.from(menuItems).findIndex(item => item === document.activeElement);
+			const menuItems = mobileMenuRef.current?.querySelectorAll(
+				"a, button",
+			) as NodeListOf<HTMLElement>;
+			const currentIndex = Array.from(menuItems).findIndex(
+				(item) => item === document.activeElement,
+			);
 
 			switch (e.key) {
-				case 'ArrowDown': {
+				case "ArrowDown": {
 					e.preventDefault();
 					const nextIndex = (currentIndex + 1) % menuItems.length;
 					menuItems[nextIndex]?.focus();
 					break;
 				}
-				case 'ArrowUp': {
+				case "ArrowUp": {
 					e.preventDefault();
 					const prevIndex = currentIndex <= 0 ? menuItems.length - 1 : currentIndex - 1;
 					menuItems[prevIndex]?.focus();
 					break;
 				}
-				case 'Escape':
+				case "Escape":
 					setMobileMenuOpen(false);
 					mobileToggleRef.current?.focus();
 					break;
 			}
 		};
 
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
 	}, [mobileMenuOpen]);
 
 	// Focus trap für Mobile Menu
@@ -51,7 +55,9 @@ export function Header() {
 		if (!mobileMenuOpen) return;
 
 		const handleTabKey = (e: KeyboardEvent) => {
-			const menuItems = mobileMenuRef.current?.querySelectorAll('a, button') as NodeListOf<HTMLElement>;
+			const menuItems = mobileMenuRef.current?.querySelectorAll(
+				"a, button",
+			) as NodeListOf<HTMLElement>;
 			const firstItem = menuItems[0];
 			const lastItem = menuItems[menuItems.length - 1];
 
@@ -64,21 +70,24 @@ export function Header() {
 			}
 		};
 
-		document.addEventListener('keydown', handleTabKey);
-		return () => document.removeEventListener('keydown', handleTabKey);
+		document.addEventListener("keydown", handleTabKey);
+		return () => document.removeEventListener("keydown", handleTabKey);
 	}, [mobileMenuOpen]);
 
 	return (
 		<header className="fixed top-0 left-0 right-0 z-50 border-b border-gray-200/20 dark:border-gray-800/20">
 			{/* Backdrop blur for glassmorphism effect */}
-			<div className="absolute inset-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl" aria-hidden="true" />
+			<div
+				className="absolute inset-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl"
+				aria-hidden="true"
+			/>
 
 			<nav className="relative container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Hauptnavigation">
 				<div className="flex h-16 items-center justify-between">
 					{/* Logo & Brand */}
 					<div className="flex items-center">
-						<a 
-							href="/" 
+						<a
+							href="/"
 							className="flex items-center gap-3 font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md"
 							aria-label="RevierKompass - Zur Startseite"
 						>
@@ -106,7 +115,10 @@ export function Header() {
 												className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-blue-500/10 to-blue-600/10 p-6 no-underline outline-none focus:shadow-md hover:scale-105 transition-transform"
 												aria-label="Route finden - Schnellste Route zum nächsten Revier berechnen"
 											>
-												<Search className="h-6 w-6 mb-2 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+												<Search
+													className="h-6 w-6 mb-2 text-blue-600 dark:text-blue-400"
+													aria-hidden="true"
+												/>
 												<div className="mb-2 text-lg font-medium">Route finden</div>
 												<p className="text-sm leading-tight text-gray-600 dark:text-gray-400">
 													Schnellste Route zum nächsten Revier berechnen
@@ -173,7 +185,7 @@ export function Header() {
 
 				{/* Mobile Navigation */}
 				{mobileMenuOpen && (
-					<div 
+					<div
 						ref={mobileMenuRef}
 						id={mobileMenuId}
 						className="lg:hidden py-4 border-t border-gray-200/20 dark:border-gray-800/20"

@@ -53,7 +53,7 @@ export function ThemeToggle() {
 	if (!mounted) return null;
 
 	return (
-		<div 
+		<div
 			className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-full"
 			role="radiogroup"
 			aria-label="Theme auswählen"
@@ -62,7 +62,7 @@ export function ThemeToggle() {
 			<div id={themeDescriptionId} className="sr-only">
 				Wählen Sie zwischen hellem, dunklem oder System-Theme
 			</div>
-			
+
 			<button
 				type="button"
 				onClick={() => setTheme("light")}
@@ -76,7 +76,7 @@ export function ThemeToggle() {
 			>
 				<Sun className="h-4 w-4" aria-hidden="true" />
 			</button>
-			
+
 			<button
 				type="button"
 				onClick={() => setTheme("system")}
@@ -90,7 +90,7 @@ export function ThemeToggle() {
 			>
 				<Monitor className="h-4 w-4" aria-hidden="true" />
 			</button>
-			
+
 			<button
 				type="button"
 				onClick={() => setTheme("dark")}

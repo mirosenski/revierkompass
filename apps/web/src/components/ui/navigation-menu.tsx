@@ -30,7 +30,12 @@ function NavigationMenuList({ className, children, ...props }: React.ComponentPr
 // Navigation Menu Item - Container für einzelne Menu Items
 function NavigationMenuItem({ className, children, ...props }: React.ComponentProps<"div">) {
 	return (
-		<div data-slot="navigation-menu-item" className={cn("relative", className)} role="none" {...props}>
+		<div
+			data-slot="navigation-menu-item"
+			className={cn("relative", className)}
+			role="none"
+			{...props}
+		>
 			{children}
 		</div>
 	);
@@ -45,6 +50,9 @@ function NavigationMenuTrigger({
 	className,
 	children,
 	onClick,
+	onKeyDown,
+	onMouseEnter,
+	onMouseLeave,
 	...props
 }: React.ComponentProps<"button">) {
 	return (
@@ -52,6 +60,9 @@ function NavigationMenuTrigger({
 			data-slot="navigation-menu-trigger"
 			className={cn(navigationMenuTriggerStyle(), "group", className)}
 			onClick={onClick}
+			onKeyDown={onKeyDown}
+			onMouseEnter={onMouseEnter}
+			onMouseLeave={onMouseLeave}
 			role="menuitem"
 			aria-haspopup="true"
 			{...props}
@@ -111,7 +122,7 @@ function NavigationMenuIndicator({ className, ...props }: React.ComponentProps<"
 
 // Hover Navigation Menu - Erweiterte Version mit vollständiger Accessibility
 interface HoverNavigationMenuProps {
-	trigger: React.ReactNode;
+	trigger: React.ReactElement;
 	children: React.ReactNode;
 	className?: string;
 }
@@ -127,7 +138,7 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 	// Keyboard detection
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'Tab' || e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Escape') {
+			if (e.key === "Tab" || e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Escape") {
 				setIsKeyboardUser(true);
 			}
 		};
@@ -136,19 +147,19 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 			setIsKeyboardUser(false);
 		};
 
-		document.addEventListener('keydown', handleKeyDown);
-		document.addEventListener('mousedown', handleMouseDown);
+		document.addEventListener("keydown", handleKeyDown);
+		document.addEventListener("mousedown", handleMouseDown);
 
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown);
-			document.removeEventListener('mousedown', handleMouseDown);
+			document.removeEventListener("keydown", handleKeyDown);
+			document.removeEventListener("mousedown", handleMouseDown);
 		};
 	}, []);
 
 	// Hover handlers mit Delay (nur für Mausbenutzer)
 	const handleMouseEnter = () => {
 		if (isKeyboardUser) return;
-		
+
 		if (timeoutRef.current) {
 			clearTimeout(timeoutRef.current);
 			timeoutRef.current = null;
@@ -158,59 +169,37 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 
 	const handleMouseLeave = () => {
 		if (isKeyboardUser) return;
-		
+
 		timeoutRef.current = setTimeout(() => {
 			setDropdownOpen(false);
 		}, 150);
 	};
 
-	// Keyboard navigation
-	const handleKeyDown = (e: React.KeyboardEvent) => {
-		switch (e.key) {
-			case 'Enter':
-			case ' ':
-				e.preventDefault();
-				setDropdownOpen(!dropdownOpen);
-				break;
-			case 'ArrowDown':
-				e.preventDefault();
-				setDropdownOpen(true);
-				// Focus first menu item
-				setTimeout(() => {
-					const firstMenuItem = dropdownRef.current?.querySelector('[role="menuitem"]') as HTMLElement;
-					firstMenuItem?.focus();
-				}, 0);
-				break;
-			case 'Escape':
-				setDropdownOpen(false);
-				triggerRef.current?.focus();
-				break;
-		}
-	};
-
 	// Focus management für Dropdown
 	const handleDropdownKeyDown = (e: React.KeyboardEvent) => {
-		const menuItems = Array.from(dropdownRef.current?.querySelectorAll('[role="menuitem"]') || []) as HTMLElement[];
-		const currentIndex = menuItems.findIndex(item => item === document.activeElement);
+		const menuItems = Array.from(
+			dropdownRef.current?.querySelectorAll('[role="menuitem"]') || [],
+		) as HTMLElement[];
+		const currentIndex = menuItems.findIndex((item) => item === document.activeElement);
 
 		switch (e.key) {
-			case 'ArrowDown': {
+			case "ArrowDown": {
 				e.preventDefault();
 				const nextIndex = (currentIndex + 1) % menuItems.length;
 				menuItems[nextIndex]?.focus();
 				break;
 			}
-			case 'ArrowUp': {
+			case "ArrowUp": {
 				e.preventDefault();
 				const prevIndex = currentIndex <= 0 ? menuItems.length - 1 : currentIndex - 1;
 				menuItems[prevIndex]?.focus();
 				break;
 			}
-			case 'Escape':
+			case "Escape":
 				setDropdownOpen(false);
 				triggerRef.current?.focus();
 				break;
-			case 'Tab':
+			case "Tab":
 				// Close dropdown on tab
 				setDropdownOpen(false);
 				break;
@@ -236,21 +225,10 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 
 	return (
 		<div className={cn("relative", className)}>
-			{/* Trigger Button */}
-			<button
-				ref={triggerRef}
-				type="button"
-				className="relative"
-				onKeyDown={handleKeyDown}
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
-				aria-expanded={dropdownOpen}
-				aria-haspopup="true"
-				aria-controls={dropdownMenuId}
-			>
-				{/* Trigger mit data-state für Chevron Animation */}
-				<div data-state={dropdownOpen ? "open" : "closed"}>{trigger}</div>
-			</button>
+			{/* Trigger Button - direkt den trigger verwenden */}
+			<span role="button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+				{trigger}
+			</span>
 
 			{/* Dropdown Content */}
 			{dropdownOpen && (
