@@ -55,22 +55,32 @@ function KartePage() {
 
 export default function App() {
 	return (
-		<Router>
-			<div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-				<Header />
-				<div className="pt-16">
-					{" "}
-					{/* Spacer für fixed header */}
-					<Routes>
-						<Route path="/" element={<HomePage />} />
-						<Route path="/about" element={<AboutPage />} />
-						<Route path="/wizard" element={<WizardPage />} />
-						<Route path="/praesidien" element={<PraesidienPage />} />
-						<Route path="/karte" element={<KartePage />} />
-					</Routes>
+		<>
+			{/* NOScript Warning */}
+			<div className="hidden noscript:block bg-red-500 text-white p-4 text-center">
+				<div className="container mx-auto">
+					<strong>JavaScript erforderlich:</strong> Diese Anwendung benötigt JavaScript für die volle Funktionalität. 
+					Bitte aktivieren Sie JavaScript in Ihrem Browser.
 				</div>
-				<Footer />
 			</div>
-		</Router>
+			
+			<Router>
+				<div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+					<Header />
+					<div className="pt-16">
+						{" "}
+						{/* Spacer für fixed header */}
+						<Routes>
+							<Route path="/" element={<HomePage />} />
+							<Route path="/about" element={<AboutPage />} />
+							<Route path="/wizard" element={<WizardPage />} />
+							<Route path="/praesidien" element={<PraesidienPage />} />
+							<Route path="/karte" element={<KartePage />} />
+						</Routes>
+					</div>
+					<Footer />
+				</div>
+			</Router>
+		</>
 	);
 }

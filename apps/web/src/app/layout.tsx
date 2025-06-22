@@ -2,7 +2,6 @@ import { Outlet, useMatches } from "@tanstack/react-router";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AppBreadcrumb } from "@/components/layout/Breadcrumb";
-import { ThemeProvider } from "@/providers/ThemeProvider";
 
 export default function Shell() {
 	const matches = useMatches();
@@ -22,20 +21,18 @@ export default function Shell() {
 	const currentPage = crumbs.length > 0 ? crumbs[crumbs.length - 1].label : "";
 
 	return (
-		<ThemeProvider>
-			<div className="flex min-h-dvh flex-col bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-50">
-				<Header />
-				<AppBreadcrumb
-					items={breadcrumbItems.slice(0, -1)}
-					current={currentPage !== "Start" ? currentPage : undefined}
-				/>
-				<main className="flex-1 pt-28 pb-8">
-					<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-						<Outlet />
-					</div>
-				</main>
-				<Footer />
-			</div>
-		</ThemeProvider>
+		<div className="flex min-h-dvh flex-col bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-50">
+			<Header />
+			<AppBreadcrumb
+				items={breadcrumbItems.slice(0, -1)}
+				current={currentPage !== "Start" ? currentPage : undefined}
+			/>
+			<main className="flex-1 pt-28 pb-8">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+					<Outlet />
+				</div>
+			</main>
+			<Footer />
+		</div>
 	);
 }

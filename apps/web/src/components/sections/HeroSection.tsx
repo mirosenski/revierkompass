@@ -27,14 +27,14 @@ export function HeroSection() {
 						Schnellste Routen zu allen Revieren
 					</div>
 
-					<h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+					<h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 text-shadow-lg text-shadow-black/20 dark:text-shadow-white/10">
 						Willkommen beim
-						<span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+						<span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 text-shadow-lg text-shadow-blue-500/30 dark:text-shadow-blue-400/20">
 							RevierKompass
 						</span>
 					</h1>
 
-					<p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-10">
+					<p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-10 text-shadow-sm text-shadow-black/10 dark:text-shadow-white/5">
 						Finden Sie in Sekundenschnelle die optimale Route zum nächsten Polizeipräsidium.
 						Intelligent, offline-fähig und immer aktuell.
 					</p>
@@ -42,20 +42,20 @@ export function HeroSection() {
 					<div className="flex flex-col sm:flex-row gap-4 justify-center">
 						<Button
 							size="lg"
-							className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
+							className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all pointer-coarse:px-12 pointer-coarse:py-8 pointer-coarse:text-xl text-shadow-sm text-shadow-black/20"
 							onClick={handleRoutePlanning}
 						>
-							<Search className="mr-2 h-5 w-5" />
+							<Search className="mr-2 h-5 w-5 pointer-coarse:h-6 pointer-coarse:w-6" />
 							Route planen
-							<ArrowRight className="ml-2 h-5 w-5" />
+							<ArrowRight className="ml-2 h-5 w-5 pointer-coarse:h-6 pointer-coarse:w-6" />
 						</Button>
 						<Button
 							variant="outline"
 							size="lg"
-							className="px-8 py-6 text-lg"
+							className="px-8 py-6 text-lg pointer-coarse:px-12 pointer-coarse:py-8 pointer-coarse:text-xl text-shadow-sm text-shadow-black/10"
 							onClick={handleAllPresidencies}
 						>
-							<MapPin className="mr-2 h-5 w-5" />
+							<MapPin className="mr-2 h-5 w-5 pointer-coarse:h-6 pointer-coarse:w-6" />
 							Alle Präsidien
 						</Button>
 					</div>
@@ -73,8 +73,8 @@ export function HeroSection() {
 					</Card>
 
 					{/* Security Feature */}
-					<Card className="p-6 hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700">
-						<div className="rounded-lg bg-green-100 dark:bg-green-900/30 p-3 inline-block mb-4">
+					<Card className="p-6 hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 inverted-colors:shadow-none">
+						<div className="rounded-lg bg-green-100 dark:bg-green-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-green-500/30 inverted-colors:drop-shadow-none">
 							<Shield className="h-8 w-8 text-green-600 dark:text-green-400" />
 						</div>
 						<h3 className="text-lg font-semibold mb-2">Sicher & Verschlüsselt</h3>
@@ -84,8 +84,8 @@ export function HeroSection() {
 					</Card>
 
 					{/* Speed Feature */}
-					<Card className="p-6 hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700">
-						<div className="rounded-lg bg-orange-100 dark:bg-orange-900/30 p-3 inline-block mb-4">
+					<Card className="p-6 hover:shadow-lg transition-all duration-300 border border-gray-200 dark:border-gray-700 inverted-colors:shadow-none">
+						<div className="rounded-lg bg-orange-100 dark:bg-orange-900/30 p-3 inline-block mb-4 drop-shadow-lg drop-shadow-orange-500/30 inverted-colors:drop-shadow-none">
 							<Zap className="h-8 w-8 text-orange-600 dark:text-orange-400" />
 						</div>
 						<h3 className="text-lg font-semibold mb-2">Blitzschnell</h3>
@@ -96,7 +96,7 @@ export function HeroSection() {
 
 					{/* Stats Row */}
 					<Card className="lg:col-span-2 p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-						<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+						<div className="flex flex-col sm:flex-row items-baseline-last justify-between gap-4">
 							<div className="text-center sm:text-left">
 								<p className="text-3xl font-bold text-gray-900 dark:text-white">1.337</p>
 								<p className="text-gray-600 dark:text-gray-400">Polizeireviere</p>

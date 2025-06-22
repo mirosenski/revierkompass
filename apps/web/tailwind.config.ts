@@ -26,7 +26,51 @@ export default {
 				xs: "var(--rk-shadow-xs)",
 				sm: "var(--rk-shadow-sm)",
 			},
+			textShadow: {
+				'2xs': '0 1px 1px var(--tw-shadow-color)',
+				xs: '0 1px 2px var(--tw-shadow-color)',
+				sm: '0 2px 4px var(--tw-shadow-color)',
+				DEFAULT: '0 2px 4px var(--tw-shadow-color)',
+				md: '0 4px 6px var(--tw-shadow-color)',
+				lg: '0 4px 8px var(--tw-shadow-color)',
+			},
 		},
 	},
-	plugins: [],
+	plugins: [
+		function({ addUtilities }: any) {
+			const newUtilities = {
+				'.mask-radial-from-transparent': {
+					'mask-image': 'radial-gradient(circle at center, transparent 0%, black 100%)',
+				},
+				'.mask-radial-to-black': {
+					'mask-image': 'radial-gradient(circle at center, black 0%, transparent 100%)',
+				},
+				'.mask-radial-at-center': {
+					'mask-image': 'radial-gradient(circle at center, transparent 0%, black 100%)',
+				},
+				'.mask-b-from-50%': {
+					'mask-image': 'linear-gradient(to bottom, transparent 0%, black 50%)',
+				},
+				'.mask-t-from-50%': {
+					'mask-image': 'linear-gradient(to top, transparent 0%, black 50%)',
+				},
+				'.mask-l-from-50%': {
+					'mask-image': 'linear-gradient(to left, transparent 0%, black 50%)',
+				},
+				'.mask-r-from-50%': {
+					'mask-image': 'linear-gradient(to right, transparent 0%, black 50%)',
+				},
+				'.mask-radial-[50%_90%]': {
+					'mask-image': 'radial-gradient(circle at 50% 90%, transparent 0%, black 100%)',
+				},
+				'.mask-radial-from-80%': {
+					'mask-image': 'radial-gradient(circle at center, transparent 0%, black 80%)',
+				},
+				'.mask-radial-to-85%': {
+					'mask-image': 'radial-gradient(circle at center, black 0%, transparent 85%)',
+				},
+			};
+			addUtilities(newUtilities);
+		},
+	],
 } satisfies Config;

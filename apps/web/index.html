@@ -7,14 +7,17 @@
     <meta name="theme-color" content="#000000" />
     <title>RevierKompass</title>
     <script>
-      // Verhindert FOUC und verwendet beim ersten Start immer System-Theme
+      // Verhindert FOUC (Flash of Unstyled Content) und lädt gespeichertes Theme
       (function() {
         try {
-          const savedTheme = localStorage.getItem('rk-theme');
+          // Versuche localStorage, dann sessionStorage
+          let savedTheme = localStorage.getItem('theme');
+          if (!savedTheme) {
+            savedTheme = sessionStorage.getItem('theme');
+          }
+          
           const root = document.documentElement;
           
-          // Nur wenn explizit "light" oder "dark" gewählt wurde, verwende das
-          // Ansonsten immer System-Theme
           if (savedTheme === 'light') {
             root.classList.add('light');
           } else if (savedTheme === 'dark') {
@@ -28,7 +31,7 @@
             }
           }
         } catch (error) {
-          // Fallback zu System-Theme
+          // Fallback zu System-Theme bei Fehlern
           const root = document.documentElement;
           if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             root.classList.add('dark');
