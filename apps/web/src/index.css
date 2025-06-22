@@ -1,353 +1,179 @@
 @import "./styles/tokens.css";
 @import "tailwindcss";
 
-/* Basis-Styles für bessere Theme-Übergänge */
-html {
-	transition:
-		background-color 0.3s ease,
-		color 0.3s ease;
+/* Explizite Dark Mode Unterstützung für alle Browser */
+/* Überschreibt alle Media Query-basierten Styles */
+
+/* Standard: Light Mode */
+:root {
+  color-scheme: light;
 }
 
-/* Explizite Dark Mode Unterstützung für Tailwind v4 */
-@media (prefers-color-scheme: dark) {
-	:root {
-		color-scheme: dark;
-	}
-}
-
+/* Dark Mode nur wenn .dark-Klasse explizit gesetzt ist */
 .dark {
-	color-scheme: dark;
+  color-scheme: dark;
 }
 
+/* Light Mode explizit wenn .light-Klasse gesetzt ist */
 .light {
-	color-scheme: light;
+  color-scheme: light;
+}
+
+/* WICHTIG: Deaktiviere Media Query-basierte Dark Mode Styles */
+/* Diese Regeln überschreiben die Standard-Tailwind v4 Media Queries */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not(.dark) {
+    /* Nur wenn keine explizite Klasse gesetzt ist */
+    color-scheme: dark;
+  }
 }
 
 /* Explizite Dark Mode Styles für wichtige Elemente */
-.dark body {
-	background-color: #111827 !important; /* gray-900 */
-	color: #f9fafb !important; /* gray-50 */
+.dark body,
+html:not(.light) body {
+  background-color: #111827 !important; /* gray-900 */
+  color: #f9fafb !important; /* gray-50 */
 }
 
 .light body {
-	background-color: #ffffff !important; /* white */
-	color: #111827 !important; /* gray-900 */
+  background-color: #ffffff !important; /* white */
+  color: #111827 !important; /* gray-900 */
 }
 
-/* Zusätzliche Regeln für System Dark Mode - WICHTIG: Diese greifen sofort */
-@media (prefers-color-scheme: dark) {
-	html:not(.light) {
-		color-scheme: dark;
-	}
-
-	html:not(.light) body {
-		background-color: #111827 !important; /* gray-900 */
-		color: #f9fafb !important; /* gray-50 */
-	}
-
-	html:not(.light) .bg-gray-50 {
-		background-color: #111827 !important; /* gray-900 */
-	}
-
-	html:not(.light) .bg-white {
-		background-color: #1f2937 !important; /* gray-800 */
-	}
-
-	html:not(.light) .text-gray-900 {
-		color: #f9fafb !important; /* gray-50 */
-	}
-
-	html:not(.light) .text-gray-100 {
-		color: #f3f4f6 !important; /* gray-100 */
-	}
-
-	html:not(.light) .text-gray-700 {
-		color: #d1d5db !important; /* gray-300 */
-	}
-
-	html:not(.light) .text-gray-300 {
-		color: #9ca3af !important; /* gray-400 */
-	}
-
-	html:not(.light) .text-gray-600 {
-		color: #9ca3af !important; /* gray-400 */
-	}
-
-	html:not(.light) .text-gray-400 {
-		color: #6b7280 !important; /* gray-500 */
-	}
-
-	html:not(.light) .border-gray-200 {
-		border-color: #374151 !important; /* gray-700 */
-	}
-
-	html:not(.light) .border-gray-700 {
-		border-color: #4b5563 !important; /* gray-600 */
-	}
-}
-
-/* Zusätzliche Regeln für System Light Mode */
-@media (prefers-color-scheme: light) {
-	html:not(.dark) {
-		color-scheme: light;
-	}
-
-	html:not(.dark) body {
-		background-color: #ffffff !important; /* white */
-		color: #111827 !important; /* gray-900 */
-	}
-
-	html:not(.dark) .bg-gray-50 {
-		background-color: #f9fafb !important; /* gray-50 */
-	}
-
-	html:not(.dark) .bg-white {
-		background-color: #ffffff !important; /* white */
-	}
-
-	html:not(.dark) .text-gray-900 {
-		color: #111827 !important; /* gray-900 */
-	}
-
-	html:not(.dark) .text-gray-100 {
-		color: #111827 !important; /* gray-900 */
-	}
-
-	html:not(.dark) .text-gray-700 {
-		color: #374151 !important; /* gray-700 */
-	}
-
-	html:not(.dark) .text-gray-300 {
-		color: #d1d5db !important; /* gray-300 */
-	}
-
-	html:not(.dark) .text-gray-600 {
-		color: #4b5563 !important; /* gray-600 */
-	}
-
-	html:not(.dark) .text-gray-400 {
-		color: #9ca3af !important; /* gray-400 */
-	}
-
-	html:not(.dark) .border-gray-200 {
-		border-color: #e5e7eb !important; /* gray-200 */
-	}
-
-	html:not(.dark) .border-gray-700 {
-		border-color: #374151 !important; /* gray-700 */
-	}
-}
-
-/* Background Colors */
-.dark .bg-gray-50 {
-	background-color: #111827 !important; /* gray-900 */
+/* Dark Mode Background Colors */
+.dark .bg-gray-50,
+html:not(.light) .bg-gray-50 {
+  background-color: #111827 !important; /* gray-900 */
 }
 
 .light .bg-gray-50 {
-	background-color: #f9fafb !important; /* gray-50 */
+  background-color: #f9fafb !important; /* gray-50 */
 }
 
-.dark .bg-gray-100 {
-	background-color: #1f2937 !important; /* gray-800 */
-}
-
-.light .bg-gray-100 {
-	background-color: #f3f4f6 !important; /* gray-100 */
-}
-
-.dark .bg-white {
-	background-color: #1f2937 !important; /* gray-800 */
+.dark .bg-white,
+html:not(.light) .bg-white {
+  background-color: #1f2937 !important; /* gray-800 */
 }
 
 .light .bg-white {
-	background-color: #ffffff !important; /* white */
+  background-color: #ffffff !important; /* white */
 }
 
-.dark .bg-gray-800 {
-	background-color: #374151 !important; /* gray-700 */
+.dark .bg-gray-800,
+html:not(.light) .bg-gray-800 {
+  background-color: #374151 !important; /* gray-700 */
 }
 
 .light .bg-gray-800 {
-	background-color: #1f2937 !important; /* gray-800 */
+  background-color: #1f2937 !important; /* gray-800 */
 }
 
-.dark .bg-gray-900 {
-	background-color: #111827 !important; /* gray-900 */
+.dark .bg-gray-900,
+html:not(.light) .bg-gray-900 {
+  background-color: #111827 !important; /* gray-900 */
 }
 
 .light .bg-gray-900 {
-	background-color: #111827 !important; /* gray-900 */
+  background-color: #111827 !important; /* gray-900 */
 }
 
-/* Blue Colors für System-Modus Test */
-.dark .bg-blue-50 {
-	background-color: #1e3a8a !important; /* blue-900 */
+.dark .bg-gray-100,
+html:not(.light) .bg-gray-100 {
+  background-color: #1f2937 !important; /* gray-800 */
 }
 
-.light .bg-blue-50 {
-	background-color: #eff6ff !important; /* blue-50 */
+.light .bg-gray-100 {
+  background-color: #f3f4f6 !important; /* gray-100 */
 }
 
-.dark .bg-blue-900 {
-	background-color: #1e3a8a !important; /* blue-900 */
+.dark .bg-gray-700,
+html:not(.light) .bg-gray-700 {
+  background-color: #374151 !important; /* gray-700 */
 }
 
-.light .bg-blue-900 {
-	background-color: #1e3a8a !important; /* blue-900 */
+.light .bg-gray-700 {
+  background-color: #374151 !important; /* gray-700 */
 }
 
-/* Text Colors */
-.dark .text-gray-900 {
-	color: #f9fafb !important; /* gray-50 */
+/* Dark Mode Text Colors */
+.dark .text-gray-900,
+html:not(.light) .text-gray-900 {
+  color: #f9fafb !important; /* gray-50 */
 }
 
 .light .text-gray-900 {
-	color: #111827 !important; /* gray-900 */
+  color: #111827 !important; /* gray-900 */
 }
 
-.dark .text-gray-100 {
-	color: #f3f4f6 !important; /* gray-100 */
-}
-
-.light .text-gray-100 {
-	color: #111827 !important; /* gray-900 */
-}
-
-.dark .text-gray-700 {
-	color: #d1d5db !important; /* gray-300 */
+.dark .text-gray-700,
+html:not(.light) .text-gray-700 {
+  color: #d1d5db !important; /* gray-300 */
 }
 
 .light .text-gray-700 {
-	color: #374151 !important; /* gray-700 */
+  color: #374151 !important; /* gray-700 */
 }
 
-.dark .text-gray-300 {
-	color: #9ca3af !important; /* gray-400 */
+.dark .text-gray-200,
+html:not(.light) .text-gray-200 {
+  color: #e5e7eb !important; /* gray-200 */
+}
+
+.light .text-gray-200 {
+  color: #374151 !important; /* gray-700 */
+}
+
+.dark .text-gray-300,
+html:not(.light) .text-gray-300 {
+  color: #d1d5db !important; /* gray-300 */
 }
 
 .light .text-gray-300 {
-	color: #d1d5db !important; /* gray-300 */
+  color: #d1d5db !important; /* gray-300 */
 }
 
-.dark .text-gray-600 {
-	color: #9ca3af !important; /* gray-400 */
+.dark .text-gray-600,
+html:not(.light) .text-gray-600 {
+  color: #9ca3af !important; /* gray-400 */
 }
 
 .light .text-gray-600 {
-	color: #4b5563 !important; /* gray-600 */
+  color: #4b5563 !important; /* gray-600 */
 }
 
-.dark .text-gray-400 {
-	color: #6b7280 !important; /* gray-500 */
+.dark .text-white,
+html:not(.light) .text-white {
+  color: #ffffff !important; /* white */
 }
 
-.light .text-gray-400 {
-	color: #9ca3af !important; /* gray-400 */
+.light .text-white {
+  color: #ffffff !important; /* white */
 }
 
-.dark .text-gray-500 {
-	color: #6b7280 !important; /* gray-500 */
-}
-
-.light .text-gray-500 {
-	color: #6b7280 !important; /* gray-500 */
-}
-
-/* Blue Text Colors */
-.dark .text-blue-900 {
-	color: #dbeafe !important; /* blue-100 */
-}
-
-.light .text-blue-900 {
-	color: #1e3a8a !important; /* blue-900 */
-}
-
-.dark .text-blue-100 {
-	color: #dbeafe !important; /* blue-100 */
-}
-
-.light .text-blue-100 {
-	color: #dbeafe !important; /* blue-100 */
-}
-
-.dark .text-blue-700 {
-	color: #93c5fd !important; /* blue-300 */
-}
-
-.light .text-blue-700 {
-	color: #1d4ed8 !important; /* blue-700 */
-}
-
-.dark .text-blue-300 {
-	color: #93c5fd !important; /* blue-300 */
-}
-
-.light .text-blue-300 {
-	color: #93c5fd !important; /* blue-300 */
-}
-
-/* Border Colors */
-.dark .border-gray-200 {
-	border-color: #374151 !important; /* gray-700 */
+/* Dark Mode Border Colors */
+.dark .border-gray-200,
+html:not(.light) .border-gray-200 {
+  border-color: #374151 !important; /* gray-700 */
 }
 
 .light .border-gray-200 {
-	border-color: #e5e7eb !important; /* gray-200 */
+  border-color: #e5e7eb !important; /* gray-200 */
 }
 
-.dark .border-gray-700 {
-	border-color: #4b5563 !important; /* gray-600 */
+.dark .border-gray-700,
+html:not(.light) .border-gray-700 {
+  border-color: #4b5563 !important; /* gray-600 */
 }
 
 .light .border-gray-700 {
-	border-color: #374151 !important; /* gray-700 */
+  border-color: #374151 !important; /* gray-700 */
 }
 
-.dark .border-gray-300 {
-	border-color: #4b5563 !important; /* gray-600 */
-}
-
-.light .border-gray-300 {
-	border-color: #d1d5db !important; /* gray-300 */
-}
-
-.dark .border-gray-600 {
-	border-color: #4b5563 !important; /* gray-600 */
+.dark .border-gray-600,
+html:not(.light) .border-gray-600 {
+  border-color: #4b5563 !important; /* gray-600 */
 }
 
 .light .border-gray-600 {
-	border-color: #4b5563 !important; /* gray-600 */
-}
-
-/* Blue Border Colors */
-.dark .border-blue-200 {
-	border-color: #1e40af !important; /* blue-800 */
-}
-
-.light .border-blue-200 {
-	border-color: #bfdbfe !important; /* blue-200 */
-}
-
-.dark .border-blue-700 {
-	border-color: #1d4ed8 !important; /* blue-700 */
-}
-
-.light .border-blue-700 {
-	border-color: #1d4ed8 !important; /* blue-700 */
-}
-
-body {
-	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-		"Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-/* Smooth transitions für alle Theme-Änderungen */
-* {
-	transition:
-		background-color 0.3s ease,
-		border-color 0.3s ease,
-		color 0.3s ease;
+  border-color: #4b5563 !important; /* gray-600 */
 }

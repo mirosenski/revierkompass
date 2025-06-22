@@ -18,6 +18,7 @@
 		}
 	},
 	"files": {
-		"includes": ["apps/**", "packages/**", "src/**"]
+		"includes": ["apps/*/src/**/*.{js,ts,jsx,tsx}", "packages/*/src/**/*.{js,ts,jsx,tsx}"],
+		"ignoreUnknown": true
 	}
 }
