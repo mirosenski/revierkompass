@@ -1,10 +1,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter, createRoute, createRootRouteWithContext } from "@tanstack/react-router";
+import {
+	RouterProvider,
+	createRouter,
+	createRoute,
+	createRootRouteWithContext,
+} from "@tanstack/react-router";
 
 import Shell from "./app/layout.tsx";
 import HomePage from "./app/home.page.tsx";
 import AboutPage from "./app/about.page.tsx";
+import WizardPage from "./app/wizard.page.tsx";
+import PraesidienPage from "./app/praesidien.page.tsx";
+import KartePage from "./app/karte.page.tsx";
 import "./index.css";
 
 interface MyRouterContext {
@@ -36,7 +44,40 @@ const aboutRoute = createRoute({
 	}),
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, aboutRoute]);
+const wizardRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/wizard",
+	component: WizardPage,
+	context: () => ({
+		getTitle: () => "Route finden",
+	}),
+});
+
+const praesidienRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/praesidien",
+	component: PraesidienPage,
+	context: () => ({
+		getTitle: () => "Präsidien",
+	}),
+});
+
+const karteRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/karte",
+	component: KartePage,
+	context: () => ({
+		getTitle: () => "Kartenansicht",
+	}),
+});
+
+const routeTree = rootRoute.addChildren([
+	indexRoute,
+	aboutRoute,
+	wizardRoute,
+	praesidienRoute,
+	karteRoute,
+]);
 
 const router = createRouter({ routeTree });
 
