@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+.pnp.*
+.yarn/*
+
+# Build outputs
+dist
+build
+.next
+.turbo
+.vite
+.parcel-cache
+
+# Env files
+.env*
+!.env.example
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+coverage
+.nyc_output
+playwright-report
+test-results
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# PWA
+public/sw.js
+public/workbox-*.js
