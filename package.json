@@ -9,7 +9,7 @@
     "build": "turbo build",
     "lint": "pnpm exec biome lint .",
     "format": "pnpm exec biome format --write .",
-    "type-check": "turbo type-check",
+    "typecheck": "turbo type-check",
     "test": "turbo test"
   },
   "devDependencies": {
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
+    "@tanstack/react-router": "^1.121.27",
     "@tanstack/router": "0.0.1-beta.174",
     "react-router": "npm:@tanstack/router@0.0.1-beta.53",
     "tailwindcss": "^4.1.10"

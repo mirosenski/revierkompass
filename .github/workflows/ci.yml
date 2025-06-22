@@ -1,0 +1,53 @@
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # 1) Code holen  + Submodules (falls nötig)
+      - uses: actions/checkout@v4
+
+      # 2) PNPM + Node einrichten  (=> speed via cache)
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9        # selbe PNPM-Version wie lokal
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20  # aktuelle LTS
+          cache: 'pnpm'
+
+      # 3) Abhängigkeiten installieren
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # 4) Lint
+      - name: Lint (Biome)
+        run: pnpm lint
+
+      # 5) Type-Check
+      - name: Type Check
+        run: pnpm typecheck
+
+      # 6) Unit-Tests + Coverage
+      - name: Unit Tests
+        run: pnpm test
+
+      # 7) Build  (garantiert, dass der Prod-Build nicht bricht)
+      - name: Build
+        run: pnpm build
+
+      # 8) Artifacts (optional)
+      # - name: Upload dist
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: web-dist
+      #     path: apps/web/dist 
