@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <title>RevierKompass</title>
+    <!-- Theme Script - muss vor allem anderen ausgeführt werden -->
+    <script>
+      (function() {
+        // Sofort ausführen, ohne zu warten
+        function applyTheme() {
+          try {
+            const savedTheme = localStorage.getItem('theme');
+            const root = document.documentElement;
+            
+            console.log('Saved theme from localStorage:', savedTheme);
+            console.log('System preference:', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            
+            // Nur verwende localStorage wenn es explizit gesetzt wurde (nicht 'system')
+            let themeToApply = 'system';
+            
+            if (savedTheme && savedTheme !== 'system') {
+              themeToApply = savedTheme;
+              console.log('Using saved theme:', themeToApply);
+            } else {
+              console.log('Using system theme (default)');
+            }
+            
+            if (themeToApply === 'light') {
+              root.classList.add('light');
+              console.log('Applied light theme');
+            } else if (themeToApply === 'dark') {
+              root.classList.add('dark');
+              console.log('Applied dark theme');
+            } else {
+              // System theme (Standard)
+              if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                root.classList.add('dark');
+                console.log('Applied system dark theme');
+              } else {
+                root.classList.add('light');
+                console.log('Applied system light theme');
+              }
+            }
+            
+            console.log('Final HTML classes:', root.className);
+          } catch (error) {
+            console.warn('Theme detection error:', error);
+            // Fallback zu System Theme
+            const root = document.documentElement;
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              root.classList.add('dark');
+              console.log('Fallback: Applied dark theme');
+            } else {
+              root.classList.add('light');
+              console.log('Fallback: Applied light theme');
+            }
+          }
+        }
+        
+        // Sofort ausführen
+        applyTheme();
+        
+        // Zusätzlich nach DOMContentLoaded ausführen
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', applyTheme);
+        }
+        
+        // Und nochmal nach window load
+        window.addEventListener('load', applyTheme);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
