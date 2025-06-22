@@ -143,6 +143,22 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const dropdownMenuId = useId();
 
+	// Blur-Effekt für alle anderen Elemente wenn Dropdown geöffnet ist
+	useEffect(() => {
+		if (dropdownOpen) {
+			// CSS-Klasse sofort zum Body hinzufügen
+			document.body.classList.add("dropdown-blur-active");
+		} else {
+			// CSS-Klasse sofort entfernen
+			document.body.classList.remove("dropdown-blur-active");
+		}
+
+		// Cleanup beim Unmount
+		return () => {
+			document.body.classList.remove("dropdown-blur-active");
+		};
+	}, [dropdownOpen]);
+
 	// Keyboard detection to differentiate between pointer and keyboard users
 	useEffect(() => {
 		const handleDocumentKeyDown = (e: KeyboardEvent) => {
@@ -187,7 +203,7 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 
 		timeoutRef.current = setTimeout(() => {
 			setDropdownOpen(false);
-		}, 150);
+		}, 50);
 	};
 
 	// Focus management für Dropdown
@@ -346,7 +362,7 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 					id={dropdownMenuId}
 					role="menu"
 					aria-label="Schnellstart-Menü"
-					className="absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200"
+					className="dropdown-content absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200"
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
 					onKeyDown={handleDropdownKeyDown}

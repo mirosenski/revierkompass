@@ -11,7 +11,7 @@ export function useTheme() {
 				console.log("Theme aus localStorage geladen:", saved);
 				return saved as Theme;
 			}
-			
+
 			// Fallback zu sessionStorage
 			const sessionSaved = sessionStorage.getItem("theme");
 			if (sessionSaved === "light" || sessionSaved === "dark" || sessionSaved === "system") {
@@ -107,16 +107,19 @@ export function useTheme() {
 		const root = document.documentElement;
 		// Prüfe ob bereits eine Theme-Klasse gesetzt ist (durch HTML-Script)
 		const hasThemeClass = root.classList.contains("light") || root.classList.contains("dark");
-		
+
 		if (!hasThemeClass) {
 			// Nur anwenden wenn noch keine Klasse gesetzt ist
-			if (theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+			if (
+				theme === "dark" ||
+				(theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)
+			) {
 				root.classList.add("dark");
 			} else {
 				root.classList.add("light");
 			}
 		}
-	}, []);
+	}, [theme]);
 
 	return {
 		theme,
