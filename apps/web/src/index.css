@@ -1,6 +1,10 @@
 @import "./styles/tokens.css";
 @import "tailwindcss";
 @import "tw-animate-css";
+@import 'maplibre-gl/dist/maplibre-gl.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 
