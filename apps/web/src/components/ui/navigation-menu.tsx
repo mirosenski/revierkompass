@@ -123,7 +123,14 @@ function NavigationMenuIndicator({ className, ...props }: React.ComponentProps<"
 
 // Hover Navigation Menu - Erweiterte Version mit vollständiger Accessibility
 interface HoverNavigationMenuProps {
-	trigger: React.ReactElement;
+	trigger: React.ReactElement<{
+		onMouseEnter?: (event: React.MouseEvent) => void;
+		onMouseLeave?: (event: React.MouseEvent) => void;
+		"aria-expanded"?: boolean;
+		"aria-haspopup"?: string;
+		"aria-controls"?: string;
+		"data-state"?: string;
+	}>;
 	children: React.ReactNode;
 	className?: string;
 }
@@ -323,13 +330,13 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 			{/* Trigger-Button: Events direkt an das Trigger-Element weitergeben, kein Wrapper-Button! */}
 			{React.isValidElement(trigger)
 				? React.cloneElement(trigger, {
-					onMouseEnter: handleMouseEnter,
-					onMouseLeave: handleMouseLeave,
-					'aria-expanded': dropdownOpen,
-					'aria-haspopup': 'true',
-					'aria-controls': dropdownMenuId,
-					'data-state': dropdownOpen ? 'open' : 'closed',
-				})
+						onMouseEnter: handleMouseEnter,
+						onMouseLeave: handleMouseLeave,
+						"aria-expanded": dropdownOpen,
+						"aria-haspopup": "true",
+						"aria-controls": dropdownMenuId,
+						"data-state": dropdownOpen ? "open" : "closed",
+					})
 				: trigger}
 
 			{/* Dropdown Content */}

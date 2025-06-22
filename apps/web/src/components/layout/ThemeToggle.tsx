@@ -54,27 +54,36 @@ export function ThemeToggle() {
 				<div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[140px]">
 					<div className="py-1">
 						<button
+							type="button"
 							onClick={() => handleThemeChange("light")}
 							className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-								theme === "light" ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" : ""
+								theme === "light"
+									? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+									: ""
 							}`}
 						>
 							<Sun className="w-4 h-4" />
 							<span className="text-sm">Hell</span>
 						</button>
 						<button
+							type="button"
 							onClick={() => handleThemeChange("system")}
 							className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-								theme === "system" ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" : ""
+								theme === "system"
+									? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+									: ""
 							}`}
 						>
 							<Monitor className="w-4 h-4" />
 							<span className="text-sm">System</span>
 						</button>
 						<button
+							type="button"
 							onClick={() => handleThemeChange("dark")}
 							className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-								theme === "dark" ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" : ""
+								theme === "dark"
+									? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+									: ""
 							}`}
 						>
 							<Moon className="w-4 h-4" />
