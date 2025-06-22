@@ -1,25 +1,39 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter, createRoute, createRootRoute } from "@tanstack/react-router";
+import { RouterProvider, createRouter, createRoute, createRootRouteWithContext } from "@tanstack/react-router";
 
 import Shell from "./app/layout.tsx";
+import HomePage from "./app/home.page.tsx";
 import AboutPage from "./app/about.page.tsx";
 import "./index.css";
 
-const rootRoute = createRootRoute({
+interface MyRouterContext {
+	getTitle?: () => string;
+}
+
+const rootRoute = createRootRouteWithContext<MyRouterContext>()({
 	component: Shell,
+	context: () => ({
+		getTitle: () => "Start",
+	}),
 });
 
 const indexRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/",
-	component: () => <div>Home Page</div>,
+	component: HomePage,
+	context: () => ({
+		getTitle: () => "Start",
+	}),
 });
 
 const aboutRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/about",
 	component: AboutPage,
+	context: () => ({
+		getTitle: () => "Über uns",
+	}),
 });
 
 const routeTree = rootRoute.addChildren([indexRoute, aboutRoute]);
