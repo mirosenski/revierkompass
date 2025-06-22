@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Menu, MapPin, Search, User, Shield } from "lucide-react";
+import { Menu, Search, Shield } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { HoverNavigationMenu, NavigationMenuTrigger, NavigationMenuLink } from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
+import {
+	HoverNavigationMenu,
+	NavigationMenuTrigger,
+	NavigationMenuLink,
+} from "@/components/ui/navigation-menu";
 import { useState } from "react";
 
 export function Header() {
@@ -18,11 +21,7 @@ export function Header() {
 					{/* Logo & Brand */}
 					<div className="flex items-center">
 						<a href="/" className="flex items-center gap-3 font-bold text-lg">
-							<img 
-								src="/logo.svg" 
-								alt="RevierKompass Logo" 
-								className="h-8 w-auto"
-							/>
+							<img src="/logo.svg" alt="RevierKompass Logo" className="h-8 w-auto" />
 							<span className="hidden sm:inline">RevierKompass</span>
 						</a>
 					</div>
@@ -35,11 +34,7 @@ export function Header() {
 						{/* Desktop Navigation - Hover Dropdown */}
 						<div className="hidden lg:block">
 							<HoverNavigationMenu
-								trigger={
-									<NavigationMenuTrigger>
-										Schnellstart
-									</NavigationMenuTrigger>
-								}
+								trigger={<NavigationMenuTrigger>Schnellstart</NavigationMenuTrigger>}
 							>
 								<div className="w-[500px] p-4">
 									<div className="grid grid-cols-2 gap-3">
@@ -50,15 +45,13 @@ export function Header() {
 												className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-blue-500/10 to-blue-600/10 p-6 no-underline outline-none focus:shadow-md hover:scale-105 transition-transform"
 											>
 												<Search className="h-6 w-6 mb-2 text-blue-600 dark:text-blue-400" />
-												<div className="mb-2 text-lg font-medium">
-													Route finden
-												</div>
+												<div className="mb-2 text-lg font-medium">Route finden</div>
 												<p className="text-sm leading-tight text-gray-600 dark:text-gray-400">
 													Schnellste Route zum nächsten Revier berechnen
 												</p>
 											</NavigationMenuLink>
 										</div>
-										
+
 										{/* Sekundäre Aktionen */}
 										<NavigationMenuLink
 											href="/praesidien"
@@ -69,7 +62,7 @@ export function Header() {
 												Alle Polizeipräsidien im Überblick
 											</p>
 										</NavigationMenuLink>
-										
+
 										<NavigationMenuLink
 											href="/karte"
 											className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-50 dark:focus:bg-gray-700 dark:focus:text-gray-50 hover:scale-105"
@@ -86,7 +79,7 @@ export function Header() {
 
 						{/* Theme Toggle */}
 						<ThemeToggle />
-						
+
 						{/* Admin Login - Prominenter */}
 						<Button
 							variant="outline"
@@ -114,18 +107,30 @@ export function Header() {
 				{mobileMenuOpen && (
 					<div className="lg:hidden py-4 border-t border-gray-200/20 dark:border-gray-800/20">
 						<div className="flex flex-col gap-2">
-							<a href="/wizard" className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center gap-2">
+							<a
+								href="/wizard"
+								className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center gap-2"
+							>
 								<Search className="h-4 w-4" />
 								Route finden
 							</a>
-							<a href="/praesidien" className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+							<a
+								href="/praesidien"
+								className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+							>
 								Präsidien
 							</a>
-							<a href="/karte" className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+							<a
+								href="/karte"
+								className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+							>
 								Karte
 							</a>
 							<hr className="my-2 border-gray-200 dark:border-gray-800" />
-							<a href="/admin" className="px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-blue-950 rounded-md flex items-center gap-2 text-blue-600 dark:text-blue-400">
+							<a
+								href="/admin"
+								className="px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-blue-950 rounded-md flex items-center gap-2 text-blue-600 dark:text-blue-400"
+							>
 								<Shield className="h-4 w-4" />
 								Admin Login
 							</a>

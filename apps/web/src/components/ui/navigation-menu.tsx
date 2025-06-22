@@ -5,28 +5,16 @@ import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 
 // Navigation Menu Root - Container für das gesamte Navigation Menu
-function NavigationMenu({
-	className,
-	children,
-	...props
-}: React.ComponentProps<"div">) {
+function NavigationMenu({ className, children, ...props }: React.ComponentProps<"div">) {
 	return (
-		<div
-			data-slot="navigation-menu"
-			className={cn("relative", className)}
-			{...props}
-		>
+		<div data-slot="navigation-menu" className={cn("relative", className)} {...props}>
 			{children}
 		</div>
 	);
 }
 
 // Navigation Menu List - Container für Menu Items
-function NavigationMenuList({
-	className,
-	children,
-	...props
-}: React.ComponentProps<"div">) {
+function NavigationMenuList({ className, children, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="navigation-menu-list"
@@ -39,17 +27,9 @@ function NavigationMenuList({
 }
 
 // Navigation Menu Item - Container für einzelne Menu Items
-function NavigationMenuItem({
-	className,
-	children,
-	...props
-}: React.ComponentProps<"div">) {
+function NavigationMenuItem({ className, children, ...props }: React.ComponentProps<"div">) {
 	return (
-		<div
-			data-slot="navigation-menu-item"
-			className={cn("relative", className)}
-			{...props}
-		>
+		<div data-slot="navigation-menu-item" className={cn("relative", className)} {...props}>
 			{children}
 		</div>
 	);
@@ -83,17 +63,13 @@ function NavigationMenuTrigger({
 }
 
 // Navigation Menu Content - Dropdown Inhalt
-function NavigationMenuContent({
-	className,
-	children,
-	...props
-}: React.ComponentProps<"div">) {
+function NavigationMenuContent({ className, children, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="navigation-menu-content"
 			className={cn(
 				"absolute top-full right-0 mt-2 bg-popover text-popover-foreground rounded-md border shadow-md z-50",
-				className
+				className,
 			)}
 			{...props}
 		>
@@ -103,17 +79,13 @@ function NavigationMenuContent({
 }
 
 // Navigation Menu Link - Links innerhalb des Dropdowns
-function NavigationMenuLink({
-	className,
-	children,
-	...props
-}: React.ComponentProps<"a">) {
+function NavigationMenuLink({ className, children, ...props }: React.ComponentProps<"a">) {
 	return (
 		<a
 			data-slot="navigation-menu-link"
 			className={cn(
 				"block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
-				className
+				className,
 			)}
 			{...props}
 		>
@@ -123,31 +95,13 @@ function NavigationMenuLink({
 }
 
 // Navigation Menu Viewport - Container für das Dropdown (nicht mehr benötigt, aber für Kompatibilität)
-function NavigationMenuViewport({
-	className,
-	...props
-}: React.ComponentProps<"div">) {
-	return (
-		<div
-			data-slot="navigation-menu-viewport"
-			className={cn("", className)}
-			{...props}
-		/>
-	);
+function NavigationMenuViewport({ className, ...props }: React.ComponentProps<"div">) {
+	return <div data-slot="navigation-menu-viewport" className={cn("", className)} {...props} />;
 }
 
 // Navigation Menu Indicator - Indicator für aktive Items (nicht mehr benötigt, aber für Kompatibilität)
-function NavigationMenuIndicator({
-	className,
-	...props
-}: React.ComponentProps<"div">) {
-	return (
-		<div
-			data-slot="navigation-menu-indicator"
-			className={cn("", className)}
-			{...props}
-		/>
-	);
+function NavigationMenuIndicator({ className, ...props }: React.ComponentProps<"div">) {
+	return <div data-slot="navigation-menu-indicator" className={cn("", className)} {...props} />;
 }
 
 // Hover Navigation Menu - Erweiterte Version mit Hover-Funktionalität
@@ -159,7 +113,7 @@ interface HoverNavigationMenuProps {
 
 function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMenuProps) {
 	const [dropdownOpen, setDropdownOpen] = useState(false);
-	const dropdownRef = useRef<HTMLDivElement>(null);
+	const dropdownRef = useRef<HTMLButtonElement>(null);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	// Hover handlers mit Delay
@@ -185,9 +139,9 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 			}
 		};
 
-		document.addEventListener('mousedown', handleClickOutside);
+		document.addEventListener("mousedown", handleClickOutside);
 		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
+			document.removeEventListener("mousedown", handleClickOutside);
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
 			}
@@ -195,20 +149,20 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 	}, []);
 
 	return (
-		<div
+		<button
+			type="button"
 			className={cn("relative", className)}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 			ref={dropdownRef}
 		>
 			{/* Trigger mit data-state für Chevron Animation */}
-			<div data-state={dropdownOpen ? "open" : "closed"}>
-				{trigger}
-			</div>
-			
+			<div data-state={dropdownOpen ? "open" : "closed"}>{trigger}</div>
+
 			{/* Dropdown Content */}
 			{dropdownOpen && (
 				<div
+					role="menu"
 					className="absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 animate-in fade-in-0 slide-in-from-top-2 duration-200"
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
@@ -216,7 +170,7 @@ function HoverNavigationMenu({ trigger, children, className }: HoverNavigationMe
 					{children}
 				</div>
 			)}
-		</div>
+		</button>
 	);
 }
 
