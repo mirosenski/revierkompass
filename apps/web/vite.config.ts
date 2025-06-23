@@ -85,7 +85,7 @@ export default defineConfig({
 		compression({
 			algorithms: ['brotliCompress'],
 			exclude: [/\.(br)$/, /\.(gz)$/],
-		})
+		}),
 	],
 	server: {
 		port: 5173,
@@ -114,26 +114,41 @@ export default defineConfig({
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
 			"@revierkompass/ui": path.resolve(__dirname, "../../packages/ui/src"),
+			'object-assign': 'object-assign',
 		},
+		// Behebe concaveman Export-Problem
+		mainFields: ['module', 'main'],
 	},
 	build: {
 		target: 'es2020',
 		minify: 'terser',
+		commonjsOptions: {
+			transformMixedEsModules: true,
+		},
 		terserOptions: {
 			compress: {
 				drop_console: true,
 				drop_debugger: true,
+				pure_funcs: ['console.log', 'console.info', 'console.debug'],
 			},
 		},
 		rollupOptions: {
+			// Explizite Tree Shaking-Konfiguration
+			treeshake: {
+				moduleSideEffects: false,
+				propertyReadSideEffects: false,
+				unknownGlobalSideEffects: false,
+			},
 			output: {
 				// Manual Chunks für besseres Code Splitting
 				manualChunks: {
-					'vendor': ['react', 'react-dom', 'react-router-dom'],
+					'vendor': ['react', 'react-dom'],
+					'router': ['@tanstack/react-router'],
 					'map-core': ['maplibre-gl'],
-					'ui-kit': ['@radix-ui/react-dialog', '@radix-ui/react-select', 'lucide-react'],
-					'state': ['zustand', 'immer'],
+					'ui-kit': ['@radix-ui/react-slot', 'lucide-react', 'framer-motion'],
+					'state': ['zustand'],
 					'routing': ['@turf/turf'],
+					'query': ['@tanstack/react-query'],
 				},
 				// Asset-Optimierung
 				assetFileNames: (assetInfo) => {
@@ -147,11 +162,32 @@ export default defineConfig({
 				chunkFileNames: 'assets/js/[name]-[hash].js',
 				entryFileNames: 'assets/js/[name]-[hash].js',
 			},
+			// Behebe concaveman Export-Problem
+			external: ['concaveman'],
 		},
 		// Performance Optimierungen
 		cssCodeSplit: true,
-		sourcemap: false,
+		sourcemap: true, // Für source-map-explorer
 		reportCompressedSize: false,
 		chunkSizeWarningLimit: 1000,
+	},
+	// Dependency-Optimierung
+	optimizeDeps: {
+		include: [
+			'react',
+			'react-dom',
+			'@tanstack/react-router',
+			'@tanstack/react-query',
+			'zustand',
+			'framer-motion',
+			'lucide-react',
+		],
+		exclude: [
+			'@turf/turf', // Wird dynamisch geladen
+		],
+	},
+	define: {
+		// Behebe concaveman global-Problem
+		global: 'globalThis',
 	},
 });

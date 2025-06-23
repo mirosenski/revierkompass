@@ -21,13 +21,13 @@ export function HeroSection() {
 
 			<div className="relative container mx-auto max-w-6xl">
 				{/* Main Hero Content */}
-				<motion.div 
+				<motion.div
 					className="text-center mb-8"
 					initial={{ opacity: 0, y: 30 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
 				>
-					<motion.div 
+					<motion.div
 						className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6"
 						initial={{ opacity: 0, scale: 0.8 }}
 						animate={{ opacity: 1, scale: 1 }}
@@ -37,7 +37,7 @@ export function HeroSection() {
 						Intelligenter Routen-Wizard
 					</motion.div>
 
-					<motion.h1 
+					<motion.h1
 						className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white mb-4 text-shadow-lg text-shadow-black/20 dark:text-shadow-white/10"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -49,7 +49,7 @@ export function HeroSection() {
 						</span>
 					</motion.h1>
 
-					<motion.p 
+					<motion.p
 						className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8 text-shadow-sm text-shadow-black/10 dark:text-shadow-white/5"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -59,7 +59,7 @@ export function HeroSection() {
 						Intelligent, offline-fähig und immer aktuell.
 					</motion.p>
 
-					<motion.div 
+					<motion.div
 						className="flex flex-col sm:flex-row gap-4 justify-center"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -87,7 +87,7 @@ export function HeroSection() {
 				</motion.div>
 
 				{/* Compact Feature Cards */}
-				<motion.div 
+				<motion.div
 					className="grid grid-cols-1 md:grid-cols-3 gap-4"
 					initial={{ opacity: 0, y: 30 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -98,7 +98,9 @@ export function HeroSection() {
 							<Shield className="h-6 w-6 text-green-600 dark:text-green-400" />
 						</div>
 						<div>
-							<h3 className="font-semibold text-gray-900 dark:text-white">Sicher & DSGVO-konform</h3>
+							<h3 className="font-semibold text-gray-900 dark:text-white">
+								Sicher & DSGVO-konform
+							</h3>
 							<p className="text-sm text-gray-600 dark:text-gray-400">Alle Daten verschlüsselt</p>
 						</div>
 					</div>

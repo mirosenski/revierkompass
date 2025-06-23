@@ -134,6 +134,7 @@ export function generateReviere(praesidium: Praesidium): Revier[] {
 			id: revierId,
 			name: `Polizeirevier ${revierNummer} - ${stadtname} ${stadtteil}`,
 			praesidiumId: praesidium.id,
+			coordinates: generateCoordinates(),
 			geometry: {
 				type: "Polygon",
 				coordinates: [[]], // Würde mit echten GeoJSON-Daten gefüllt

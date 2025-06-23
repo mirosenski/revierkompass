@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Input } from "./input";
 import { Button } from "./button";
-import { MapPin, Loader2, X, Search, Target } from "lucide-react";
+import { MapPin, Loader2, X } from "lucide-react";
 import {
 	searchAddress,
 	formatAddress,
@@ -11,7 +11,7 @@ import {
 import { useDebounce } from "use-debounce";
 import { cn } from "../../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "cmdk";
+import { Command, CommandItem, CommandList } from "cmdk";
 
 interface AddressAutocompleteProps {
 	placeholder?: string;
@@ -24,8 +24,8 @@ interface AddressAutocompleteProps {
 
 // Erweiterte Nominatim-Place mit Präzisions-Bewertung
 interface EnhancedPlace extends NominatimPlace {
-	precision?: 'submeter' | 'meter' | 'street' | 'city' | 'region';
-	source: 'nominatim' | 'enhanced';
+	precision?: "submeter" | "meter" | "street" | "city" | "region";
+	source: "nominatim" | "enhanced";
 	confidence?: number;
 	score?: number;
 }
@@ -39,91 +39,91 @@ const searchNominatimEnhanced = async (query: string): Promise<EnhancedPlace[]> 
 			countrycodes: "de",
 			addressdetails: true,
 		});
-		
+
 		// Zweite Suche mit erweiterten Parametern für bessere Ergebnisse
 		const extendedResults = await searchAddress(query, {
 			limit: 5,
 			countrycodes: "de",
 			addressdetails: true,
 		});
-		
+
 		// Ergebnisse kombinieren und deduplizieren
 		const allResults = [...results, ...extendedResults];
 		const uniqueResults = allResults.filter((place, index, self) => {
-			return index === self.findIndex(r => r.place_id === place.place_id);
+			return index === self.findIndex((r) => r.place_id === place.place_id);
 		});
-		
-		return uniqueResults.map(place => ({
+
+		return uniqueResults.map((place) => ({
 			...place,
 			precision: determinePrecision(place),
-			source: 'nominatim' as const,
+			source: "nominatim" as const,
 			confidence: calculateConfidence(place),
-			score: calculateScore(place)
+			score: calculateScore(place),
 		}));
 	} catch (error) {
-		console.error('Nominatim geocoding error:', error);
+		console.error("Nominatim geocoding error:", error);
 		return [];
 	}
 };
 
 // Präzisions-Bestimmung basierend auf Place-Details
-const determinePrecision = (place: NominatimPlace): EnhancedPlace['precision'] => {
-	if (place.class === 'building' || place.class === 'amenity') return 'submeter';
-	if (place.class === 'highway' && place.address?.house_number) return 'meter';
-	if (place.class === 'highway') return 'street';
-	if (place.class === 'place' && place.type === 'city') return 'city';
-	if (place.class === 'place' && place.type === 'state') return 'region';
-	return 'region';
+const determinePrecision = (place: NominatimPlace): EnhancedPlace["precision"] => {
+	if (place.class === "building" || place.class === "amenity") return "submeter";
+	if (place.class === "highway" && place.address?.house_number) return "meter";
+	if (place.class === "highway") return "street";
+	if (place.class === "place" && place.type === "city") return "city";
+	if (place.class === "place" && place.type === "state") return "region";
+	return "region";
 };
 
 // Konfidenz-Berechnung basierend auf Place-Details
 const calculateConfidence = (place: NominatimPlace): number => {
 	let confidence = 0.3; // Basis-Konfidenz
-	
+
 	// Hausnummer erhöht Konfidenz erheblich
 	if (place.address?.house_number) confidence += 0.4;
-	
+
 	// Postleitzahl erhöht Konfidenz
 	if (place.address?.postcode) confidence += 0.2;
-	
+
 	// Straßenname erhöht Konfidenz
 	if (place.address?.road) confidence += 0.1;
-	
+
 	// Gebäude oder Einrichtung erhöht Konfidenz
-	if (place.class === 'building' || place.class === 'amenity') confidence += 0.2;
-	
+	if (place.class === "building" || place.class === "amenity") confidence += 0.2;
+
 	// Typ-spezifische Bewertung
-	if (place.class === 'highway' && place.type === 'residential') confidence += 0.1;
-	if (place.class === 'place' && place.type === 'city') confidence += 0.1;
-	
+	if (place.class === "highway" && place.type === "residential") confidence += 0.1;
+	if (place.class === "place" && place.type === "city") confidence += 0.1;
+
 	return Math.min(confidence, 1.0);
 };
 
 // Score-Berechnung für bessere Sortierung
 const calculateScore = (place: NominatimPlace): number => {
 	let score = 0;
-	
+
 	// Präzisions-basierte Punkte
 	const precisionScores: Record<string, number> = {
-		'submeter': 100,
-		'meter': 80,
-		'street': 60,
-		'city': 40,
-		'region': 20
+		submeter: 100,
+		meter: 80,
+		street: 60,
+		city: 40,
+		region: 20,
 	};
-	
+
 	const precision = determinePrecision(place);
 	if (precision) {
 		score += precisionScores[precision] || 0;
 	}
-	
+
 	// Zusätzliche Punkte für Details
 	if (place.address?.house_number) score += 20;
 	if (place.address?.postcode) score += 15;
 	if (place.address?.road) score += 10;
-	if (place.class === 'building') score += 15;
-	if (place.class === 'amenity') score += 10;
-	
+	if (place.class === "building") score += 15;
+	if (place.class === "amenity") score += 10;
+
 	return score;
 };
 
@@ -151,7 +151,6 @@ export function AddressAutocomplete({
 	const [suggestions, setSuggestions] = useState<EnhancedPlace[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [showSuggestions, setShowSuggestions] = useState(false);
-	const [selectedIndex, setSelectedIndex] = useState(-1);
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -217,29 +216,39 @@ export function AddressAutocomplete({
 
 	const getPrecisionIcon = (precision?: string) => {
 		switch (precision) {
-			case 'submeter': return '🔍';
-			case 'meter': return '📍';
-			case 'street': return '🏠';
-			case 'city': return '🏙️';
-			default: return '🌍';
+			case "submeter":
+				return "🔍";
+			case "meter":
+				return "📍";
+			case "street":
+				return "🏠";
+			case "city":
+				return "🏙️";
+			default:
+				return "🌍";
 		}
 	};
 
 	const getPrecisionText = (precision?: string) => {
 		switch (precision) {
-			case 'submeter': return 'Submeter-Genauigkeit';
-			case 'meter': return 'Meter-Genauigkeit';
-			case 'street': return 'Straßen-Genauigkeit';
-			case 'city': return 'Stadt-Genauigkeit';
-			default: return 'Regions-Genauigkeit';
+			case "submeter":
+				return "Submeter-Genauigkeit";
+			case "meter":
+				return "Meter-Genauigkeit";
+			case "street":
+				return "Straßen-Genauigkeit";
+			case "city":
+				return "Stadt-Genauigkeit";
+			default:
+				return "Regions-Genauigkeit";
 		}
 	};
 
 	const getConfidenceColor = (confidence?: number) => {
-		if (!confidence) return 'text-gray-400';
-		if (confidence >= 0.8) return 'text-green-600 dark:text-green-400';
-		if (confidence >= 0.6) return 'text-yellow-600 dark:text-yellow-400';
-		return 'text-red-600 dark:text-red-400';
+		if (!confidence) return "text-gray-400";
+		if (confidence >= 0.8) return "text-green-600 dark:text-green-400";
+		if (confidence >= 0.6) return "text-yellow-600 dark:text-yellow-400";
+		return "text-red-600 dark:text-red-400";
 	};
 
 	return (
