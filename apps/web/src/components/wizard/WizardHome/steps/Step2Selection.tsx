@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Shield, ArrowLeft, Search, Building2, MapPin, Zap, Target } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useWizardStore } from "@/stores/wizard";
+import { useWizardStore, type Praesidium } from "@/stores/wizard";
 import { usePraesidienSearch, useReviereByPraesidium } from "@/services/wizard";
 import { LivePreviewMap } from "@/components/ui/LivePreviewMap";
 import { VirtualizedHierarchy } from "@/components/ui/VirtualizedHierarchy";
@@ -43,7 +43,7 @@ export function Step2Selection() {
 		}
 	}, [reviere, setAvailableReviere]);
 
-	const handlePraesidiumSelect = (selectedPraesidium: any) => {
+        const handlePraesidiumSelect = (selectedPraesidium: Praesidium) => {
 		choosePraesidium(selectedPraesidium);
 		setSearchQuery(selectedPraesidium.name);
 	};

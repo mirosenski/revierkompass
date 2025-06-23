@@ -9,16 +9,19 @@ const queryClient = new QueryClient({
 			// Global default options
 			staleTime: 5 * 60 * 1000, // 5 minutes
 			gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-			retry: (failureCount, error) => {
-				// Don't retry on 4xx errors
-				if (error instanceof Error && "status" in error) {
-					const status = (error as any).status;
-					if (status >= 400 && status < 500) {
-						return false;
-					}
-				}
-				return failureCount < 3;
-			},
+                        retry: (failureCount, error) => {
+                                // Don't retry on 4xx errors
+                                if (error instanceof Error && "status" in error) {
+                                        interface ErrorWithStatus extends Error {
+                                                status?: number;
+                                        }
+                                        const status = (error as ErrorWithStatus).status;
+                                        if (status >= 400 && status < 500) {
+                                                return false;
+                                        }
+                                }
+                                return failureCount < 3;
+                        },
 			refetchOnWindowFocus: false,
 			refetchOnReconnect: true,
 		},

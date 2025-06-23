@@ -200,12 +200,14 @@ export function MapView({ startCoordinates, destinations = [], routes = [] }: Ma
 						onClick={() => map.current?.zoomIn()}
 						className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 					>
-						<svg
-							className="w-5 h-5 text-gray-600 dark:text-gray-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
+                                        <svg
+                                                aria-label="Zoom in"
+                                                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                        >
+                                                <title>Zoom in</title>
 							<path
 								strokeLinecap="round"
 								strokeLinejoin="round"
@@ -219,12 +221,14 @@ export function MapView({ startCoordinates, destinations = [], routes = [] }: Ma
 						onClick={() => map.current?.zoomOut()}
 						className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
 					>
-						<svg
-							className="w-5 h-5 text-gray-600 dark:text-gray-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
+                                        <svg
+                                                aria-label="Zoom out"
+                                                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                        >
+                                                <title>Zoom out</title>
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
 						</svg>
 					</button>
