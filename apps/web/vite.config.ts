@@ -4,9 +4,81 @@ import path from "node:path";
 import { VitePWA } from 'vite-plugin-pwa'
 import { compression } from 'vite-plugin-compression2'
 
+// Universeller CommonJS ES6-Export Fix Plugin
+const commonJSFixPlugin = () => {
+	// Bekannte problematische Module
+	const knownProblematicModules = [
+		'concaveman', 'rbush', 'earcut', 'geojson-rbush', 'deep-equal',
+		'density-clustering', 'martinez-polygon-clipping', 'quickselect', 
+		'robust-predicates', 'tinyqueue', 'geojson-equality', 'skmeans'
+	];
+	
+	return {
+		name: 'universal-commonjs-fix',
+		resolveId(id: string) {
+			// Prüfe bekannte problematische Module
+			if (knownProblematicModules.includes(id)) {
+				return `${id}-fixed`;
+			}
+		},
+		load(id: string) {
+			if (id.endsWith('-fixed')) {
+				const moduleName = id.replace('-fixed', '');
+				return `
+					// Universal CommonJS ES6-Export Fix für ${moduleName}
+					let moduleExport;
+					
+					try {
+						const importedModule = require('${moduleName}');
+						
+						// Universelle Export-Erkennung
+						if (typeof importedModule === 'function') {
+							// Direkte Funktion als Export
+							moduleExport = importedModule;
+						} else if (typeof importedModule === 'object' && importedModule !== null) {
+							// Objekt mit möglichen Export-Mustern
+							if (typeof importedModule.default === 'function') {
+								moduleExport = importedModule.default;
+							} else if (typeof importedModule[${JSON.stringify(moduleName)}] === 'function') {
+								moduleExport = importedModule[${JSON.stringify(moduleName)}];
+							} else if (typeof importedModule.module === 'function') {
+								moduleExport = importedModule.module;
+							} else if (typeof importedModule.main === 'function') {
+								moduleExport = importedModule.main;
+							} else {
+								// Nimm das erste verfügbare Export als Fallback
+								const keys = Object.keys(importedModule);
+								const firstFunction = keys.find(key => typeof importedModule[key] === 'function');
+								if (firstFunction) {
+									moduleExport = importedModule[firstFunction];
+								} else {
+									// Wenn keine Funktion gefunden wird, exportiere das gesamte Objekt
+									moduleExport = importedModule;
+								}
+							}
+						} else {
+							// Primitiver Export
+							moduleExport = importedModule;
+						}
+					} catch (error) {
+						console.error('Fehler beim Laden von ${moduleName}:', error);
+						// Fallback: leere Funktion
+						moduleExport = () => console.warn('${moduleName} konnte nicht geladen werden');
+					}
+					
+					export default moduleExport;
+				`;
+			}
+		}
+	};
+};
+
 export default defineConfig({
 	plugins: [
 		react(),
+		
+		// CommonJS ES6-Export Fix
+		commonJSFixPlugin(),
 		
 		// PWA Plugin mit optimierter Strategie
 		VitePWA({
@@ -123,7 +195,10 @@ export default defineConfig({
 		target: 'es2020',
 		minify: 'terser',
 		commonjsOptions: {
+			include: [/node_modules/],  // Bessere CommonJS-Unterstützung
 			transformMixedEsModules: true,
+			dynamicRequireTargets: ['node_modules/**/*.js'],  // Erweiterte CommonJS-Unterstützung
+			ignoreDynamicRequires: false
 		},
 		terserOptions: {
 			compress: {
@@ -162,8 +237,7 @@ export default defineConfig({
 				chunkFileNames: 'assets/js/[name]-[hash].js',
 				entryFileNames: 'assets/js/[name]-[hash].js',
 			},
-			// Behebe concaveman Export-Problem
-			external: ['concaveman'],
+			// CommonJS-Module werden jetzt durch das Plugin behandelt
 		},
 		// Performance Optimierungen
 		cssCodeSplit: true,
@@ -181,6 +255,10 @@ export default defineConfig({
 			'zustand',
 			'framer-motion',
 			'lucide-react',
+			// CommonJS-Module für bessere Unterstützung
+			'concaveman', 'rbush', 'earcut', 'geojson-rbush', 'deep-equal',
+			'density-clustering', 'quickselect', 'robust-predicates',
+			'tinyqueue', 'geojson-equality', 'skmeans'
 		],
 		exclude: [
 			'@turf/turf', // Wird dynamisch geladen

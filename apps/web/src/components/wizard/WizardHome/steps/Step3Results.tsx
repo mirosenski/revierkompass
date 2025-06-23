@@ -258,7 +258,7 @@ export function Step3Results({ results, loading }: Step3ResultsProps) {
 												<div className="space-y-2">
                                                                         {result.alternatives.slice(0, 3).map((alt, altIndex) => (
                                                                                 <div
-                                                                                        key={`${result.id}-${alt.id}`}
+                                                                                        key={`${result.id}-alt-${altIndex}`}
                                                                                         className="flex items-center justify-between text-sm"
                                                                                 >
                                                                                         <span className="text-gray-600 dark:text-gray-400">

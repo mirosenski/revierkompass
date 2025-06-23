@@ -1,4 +1,4 @@
 // src/lib/concaveman-wrapper.ts
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const concaveman = require("concaveman");
+// ES6-Import dank CommonJS-Fix-Plugin
+import concaveman from "concaveman";
 export default concaveman;

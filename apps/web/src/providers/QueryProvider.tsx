@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
                                                 status?: number;
                                         }
                                         const status = (error as ErrorWithStatus).status;
-                                        if (status >= 400 && status < 500) {
+                                        if (status && status >= 400 && status < 500) {
                                                 return false;
                                         }
                                 }
