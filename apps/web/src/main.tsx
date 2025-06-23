@@ -6,6 +6,8 @@ import {
 	createRoute,
 	createRootRouteWithContext,
 } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import Shell from "./app/layout.tsx";
 import HomePage from "./app/home.page.tsx";
@@ -14,6 +16,17 @@ import WizardPage from "./app/wizard.page.tsx";
 import PraesidienPage from "./app/praesidien.page.tsx";
 import KartePage from "./app/karte.page.tsx";
 import "./index.css";
+
+// Create a client
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 1000 * 60 * 5, // 5 minutes
+			gcTime: 1000 * 60 * 10, // 10 minutes
+			retry: 1,
+		},
+	},
+});
 
 interface MyRouterContext {
 	getTitle?: () => string;
@@ -92,6 +105,9 @@ if (!rootElement) throw new Error("Root element not found");
 
 createRoot(rootElement).render(
 	<StrictMode>
-		<RouterProvider router={router} />
+		<QueryClientProvider client={queryClient}>
+			<RouterProvider router={router} />
+			<ReactQueryDevtools initialIsOpen={false} />
+		</QueryClientProvider>
 	</StrictMode>,
 );

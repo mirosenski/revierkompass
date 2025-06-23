@@ -3,26 +3,23 @@ import { Card } from "@/components/ui/card";
 import { Route, Clock, Download, Copy, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-
-interface Result {
-  id: string;
-  name: string;
-  distance: number;
-  duration: number;
-}
+import { useWizardStore } from "@/stores/wizard";
+import { useExportRoutes, formatDistance, formatDuration } from "@/services/wizard";
+import type { RouteResult } from "@/stores/wizard";
 
 interface Step3ResultsProps {
-  results: Result[];
+  results: RouteResult[];
   loading: boolean;
-  onNewSearch: () => void;
 }
 
-export function Step3Results({ results, loading, onNewSearch }: Step3ResultsProps) {
+export function Step3Results({ results, loading }: Step3ResultsProps) {
   const [copied, setCopied] = useState(false);
+  const { reset } = useWizardStore();
+  const exportMutation = useExportRoutes();
 
   const handleCopy = () => {
     const text = results.map((r, i) => 
-      `${i + 1}. ${r.name}\n   ${r.distance.toFixed(1)} km - ${r.duration} min`
+      `${i + 1}. ${r.name}\n   ${formatDistance(r.distance)} - ${formatDuration(r.duration)}`
     ).join('\n\n');
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -30,8 +27,11 @@ export function Step3Results({ results, loading, onNewSearch }: Step3ResultsProp
   };
 
   const handleExport = () => {
-    // Excel Export Logic
-    console.log("Export to Excel");
+    exportMutation.mutate(results);
+  };
+
+  const handleNewSearch = () => {
+    reset();
   };
 
   return (
@@ -49,6 +49,7 @@ export function Step3Results({ results, loading, onNewSearch }: Step3ResultsProp
             variant="outline"
             onClick={handleCopy}
             className="flex-1"
+            disabled={results.length === 0}
           >
             <Copy className="mr-2 h-4 w-4" />
             {copied ? 'Kopiert!' : 'Kopieren'}
@@ -56,9 +57,10 @@ export function Step3Results({ results, loading, onNewSearch }: Step3ResultsProp
           <Button
             onClick={handleExport}
             className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+            disabled={results.length === 0 || exportMutation.isPending}
           >
             <Download className="mr-2 h-4 w-4" />
-            Excel
+            {exportMutation.isPending ? 'Exportiere...' : 'Excel'}
           </Button>
         </div>
       </Card>
@@ -93,11 +95,11 @@ export function Step3Results({ results, loading, onNewSearch }: Step3ResultsProp
                     <div className="flex items-center space-x-4 text-sm">
                       <span className="flex items-center text-blue-600">
                         <Route className="h-4 w-4 mr-1" />
-                        {result.distance.toFixed(1)} km
+                        {formatDistance(result.distance)}
                       </span>
                       <span className="flex items-center text-green-600">
                         <Clock className="h-4 w-4 mr-1" />
-                        {result.duration} min
+                        {formatDuration(result.duration)}
                       </span>
                     </div>
                   </div>
@@ -117,7 +119,7 @@ export function Step3Results({ results, loading, onNewSearch }: Step3ResultsProp
 
       <Button 
         variant="outline"
-        onClick={onNewSearch}
+        onClick={handleNewSearch}
         className="w-full"
       >
         Neue Suche starten

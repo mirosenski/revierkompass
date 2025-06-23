@@ -3,14 +3,15 @@ import { Card } from "@/components/ui/card";
 import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 import { MapPin, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useWizardStore } from "@/stores/wizard";
 
-interface Step1AddressProps {
-  startAddress: string;
-  onAddressSelect: (address: string, coordinates: [number, number]) => void;
-  onNext: () => void;
-}
+export function Step1Address() {
+  const { startAddress, nextStep, setStart, canProceed } = useWizardStore();
 
-export function Step1Address({ startAddress, onAddressSelect, onNext }: Step1AddressProps) {
+  const handleAddressSelect = (address: string, coordinates: [number, number]) => {
+    setStart(address, coordinates);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -33,14 +34,14 @@ export function Step1Address({ startAddress, onAddressSelect, onNext }: Step1Add
           </div>
           
           <AddressAutocomplete
-            value={startAddress}
-            onSelect={onAddressSelect}
+            value={startAddress || ""}
+            onSelect={handleAddressSelect}
             placeholder="Straße, Hausnummer, PLZ, Stadt"
           />
           
           <Button 
-            onClick={onNext}
-            disabled={!startAddress}
+            onClick={nextStep}
+            disabled={!canProceed(1)}
             className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
           >
             Weiter

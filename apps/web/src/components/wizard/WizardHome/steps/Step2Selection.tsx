@@ -1,32 +1,52 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Shield, ArrowLeft, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Shield, ArrowLeft, Search, Building2, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useWizardStore } from "@/stores/wizard";
+import { usePraesidienSearch, useReviereByPraesidium } from "@/services/wizard";
 
-interface Step2SelectionProps {
-  selectedTargets: string[];
-  onTargetToggle: (target: string) => void;
-  onBack: () => void;
-  onNext: () => void;
-}
+export function Step2Selection() {
+  const { 
+    query, 
+    setQuery, 
+    selectedReviere, 
+    toggleRevier, 
+    previousStep, 
+    nextStep, 
+    canProceed,
+    praesidium,
+    choosePraesidium,
+    setAvailableReviere
+  } = useWizardStore();
 
-const POLIZEIREVIERE = [
-  'Stuttgart-Mitte',
-  'Stuttgart-Bad Cannstatt', 
-  'Karlsruhe-Mitte',
-  'Mannheim-Innenstadt',
-  'Freiburg-Mitte',
-  'Heidelberg-Altstadt',
-  'Ulm-Mitte',
-  'Tübingen-Mitte'
-];
+  const [searchQuery, setSearchQuery] = useState(query);
 
-export function Step2Selection({ 
-  selectedTargets, 
-  onTargetToggle, 
-  onBack, 
-  onNext 
-}: Step2SelectionProps) {
+  // React Query für Praesidien-Suche
+  const { data: praesidien = [], isLoading: isLoadingPraesidien } = usePraesidienSearch(searchQuery);
+  
+  // React Query für Reviere
+  const { data: reviere = [], isLoading: isLoadingReviere } = useReviereByPraesidium(praesidium?.id || '');
+
+  // Update available reviere when praesidium changes
+  useEffect(() => {
+    if (reviere.length > 0) {
+      setAvailableReviere(reviere);
+    }
+  }, [reviere, setAvailableReviere]);
+
+  const handlePraesidiumSelect = (selectedPraesidium: any) => {
+    choosePraesidium(selectedPraesidium);
+    setSearchQuery(selectedPraesidium.name);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setQuery(value);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -43,45 +63,138 @@ export function Step2Selection({
             <div>
               <h3 className="font-semibold text-lg">Polizeireviere</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Wählen Sie Ihre Ziele ({selectedTargets.length} ausgewählt)
+                Wählen Sie Ihre Ziele ({selectedReviere.length} ausgewählt)
               </p>
             </div>
           </div>
-          
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {POLIZEIREVIERE.map((revier) => (
-              <motion.div
-                key={revier}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  variant={selectedTargets.includes(revier) ? "default" : "outline"}
-                  className="w-full justify-start h-auto p-4"
-                  onClick={() => onTargetToggle(revier)}
-                >
-                  <Shield className="mr-3 h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium">{revier}</div>
-                    <div className="text-sm opacity-70">Polizeirevier</div>
+
+          {/* Praesidium Selection */}
+          {!praesidium && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium">Polizeipräsidium auswählen:</span>
+              </div>
+              
+              <Input
+                placeholder="Präsidium suchen (z.B. Stuttgart, Karlsruhe...)"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="w-full"
+              />
+              
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {isLoadingPraesidien ? (
+                  <div className="text-center py-4 text-gray-500">Suche läuft...</div>
+                ) : praesidien.length > 0 ? (
+                  praesidien.map((praesidium) => (
+                    <motion.div
+                      key={praesidium.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start h-auto p-3"
+                        onClick={() => handlePraesidiumSelect(praesidium)}
+                      >
+                        <Building2 className="mr-3 h-4 w-4" />
+                        <div className="text-left">
+                          <div className="font-medium">{praesidium.name}</div>
+                          <div className="text-xs opacity-70">
+                            {praesidium.childReviere.length} Reviere verfügbar
+                          </div>
+                        </div>
+                      </Button>
+                    </motion.div>
+                  ))
+                ) : searchQuery.length > 0 ? (
+                  <div className="text-center py-4 text-gray-500">
+                    Keine Präsidien gefunden
                   </div>
+                ) : (
+                  <div className="text-center py-4 text-gray-500">
+                    Geben Sie einen Suchbegriff ein
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Selected Praesidium */}
+          {praesidium && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium">{praesidium.name}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    choosePraesidium(null);
+                    setSearchQuery('');
+                  }}
+                >
+                  Ändern
                 </Button>
-              </motion.div>
-            ))}
-          </div>
+              </div>
+
+              {/* Reviere Selection */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium">Reviere auswählen:</span>
+                </div>
+                
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {isLoadingReviere ? (
+                    <div className="text-center py-4 text-gray-500">Lade Reviere...</div>
+                  ) : reviere.length > 0 ? (
+                    reviere.map((revier) => (
+                      <motion.div
+                        key={revier.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          variant={selectedReviere.some(r => r.id === revier.id) ? "default" : "outline"}
+                          className="w-full justify-start h-auto p-3"
+                          onClick={() => toggleRevier(revier)}
+                        >
+                          <Shield className="mr-3 h-4 w-4" />
+                          <div className="text-left">
+                            <div className="font-medium">{revier.name}</div>
+                            {revier.contact?.address && (
+                              <div className="text-xs opacity-70">{revier.contact.address}</div>
+                            )}
+                          </div>
+                        </Button>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500">
+                      Keine Reviere für dieses Präsidium verfügbar
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           
           <div className="flex gap-3">
             <Button 
               variant="outline"
-              onClick={onBack}
+              onClick={previousStep}
               className="flex-1"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Zurück
             </Button>
             <Button 
-              onClick={onNext}
-              disabled={selectedTargets.length === 0}
+              onClick={nextStep}
+              disabled={!canProceed(2)}
               className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
             >
               Berechnen

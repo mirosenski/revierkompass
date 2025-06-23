@@ -1,0 +1,363 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
+import type { Coordinates, Revier, RouteResult, Praesidium } from '../stores/wizard';
+
+// API Response Schemas
+const GeocodingResponseSchema = z.object({
+  display_name: z.string(),
+  lat: z.string().transform(Number),
+  lon: z.string().transform(Number),
+  place_id: z.number(),
+  type: z.string().optional(),
+  address: z.object({
+    house_number: z.string().optional(),
+    road: z.string().optional(),
+    postcode: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    country: z.string().optional(),
+  }).optional(),
+});
+
+// Mock Data for Development
+const MOCK_PRAESIDIEN: Praesidium[] = [
+  {
+    id: 'stuttgart',
+    name: 'Polizeipräsidium Stuttgart',
+    coordinates: [9.1829, 48.7758] as [number, number],
+    childReviere: ['stuttgart-mitte', 'stuttgart-bad-cannstatt', 'stuttgart-feuerbach'],
+  },
+  {
+    id: 'karlsruhe',
+    name: 'Polizeipräsidium Karlsruhe',
+    coordinates: [8.4037, 49.0069] as [number, number],
+    childReviere: ['karlsruhe-mitte', 'karlsruhe-durlach', 'karlsruhe-mühlburg'],
+  },
+  {
+    id: 'mannheim',
+    name: 'Polizeipräsidium Mannheim',
+    coordinates: [8.4660, 49.4875] as [number, number],
+    childReviere: ['mannheim-innenstadt', 'mannheim-neckarau', 'mannheim-schwetzingerstadt'],
+  },
+];
+
+const MOCK_REVIERE: Revier[] = [
+  {
+    id: 'stuttgart-mitte',
+    name: 'Polizeirevier Stuttgart-Mitte',
+    praesidiumId: 'stuttgart',
+    coordinates: [9.1829, 48.7758] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[9.17, 48.76], [9.19, 48.76], [9.19, 48.79], [9.17, 48.79], [9.17, 48.76]]],
+    },
+    contact: {
+      phone: '+49 711 8990-0',
+      email: 'stuttgart-mitte@polizei.bwl.de',
+      address: 'Schlossplatz 1, 70173 Stuttgart',
+    },
+  },
+  {
+    id: 'stuttgart-bad-cannstatt',
+    name: 'Polizeirevier Stuttgart-Bad Cannstatt',
+    praesidiumId: 'stuttgart',
+    coordinates: [9.2167, 48.8000] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[9.20, 48.79], [9.23, 48.79], [9.23, 48.81], [9.20, 48.81], [9.20, 48.79]]],
+    },
+    contact: {
+      phone: '+49 711 8990-100',
+      email: 'bad-cannstatt@polizei.bwl.de',
+      address: 'Marktstraße 15, 70372 Stuttgart',
+    },
+  },
+  {
+    id: 'stuttgart-feuerbach',
+    name: 'Polizeirevier Stuttgart-Feuerbach',
+    praesidiumId: 'stuttgart',
+    coordinates: [9.1500, 48.8100] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[9.14, 48.80], [9.16, 48.80], [9.16, 48.82], [9.14, 48.82], [9.14, 48.80]]],
+    },
+    contact: {
+      phone: '+49 711 8990-200',
+      email: 'feuerbach@polizei.bwl.de',
+      address: 'Stuttgarter Straße 45, 70469 Stuttgart',
+    },
+  },
+  {
+    id: 'karlsruhe-mitte',
+    name: 'Polizeirevier Karlsruhe-Mitte',
+    praesidiumId: 'karlsruhe',
+    coordinates: [8.4037, 49.0069] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[8.39, 48.99], [8.41, 48.99], [8.41, 49.02], [8.39, 49.02], [8.39, 48.99]]],
+    },
+    contact: {
+      phone: '+49 721 666-0',
+      email: 'karlsruhe-mitte@polizei.bwl.de',
+      address: 'Kaiserstraße 186, 76133 Karlsruhe',
+    },
+  },
+  {
+    id: 'karlsruhe-durlach',
+    name: 'Polizeirevier Karlsruhe-Durlach',
+    praesidiumId: 'karlsruhe',
+    coordinates: [8.4700, 48.9900] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[8.46, 48.98], [8.48, 48.98], [8.48, 49.00], [8.46, 49.00], [8.46, 48.98]]],
+    },
+    contact: {
+      phone: '+49 721 666-100',
+      email: 'durlach@polizei.bwl.de',
+      address: 'Pfinztalstraße 9, 76227 Karlsruhe',
+    },
+  },
+  {
+    id: 'karlsruhe-mühlburg',
+    name: 'Polizeirevier Karlsruhe-Mühlburg',
+    praesidiumId: 'karlsruhe',
+    coordinates: [8.3500, 49.0200] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[8.34, 49.01], [8.36, 49.01], [8.36, 49.03], [8.34, 49.03], [8.34, 49.01]]],
+    },
+    contact: {
+      phone: '+49 721 666-200',
+      email: 'muehlburg@polizei.bwl.de',
+      address: 'Mühlburger Straße 12, 76185 Karlsruhe',
+    },
+  },
+  {
+    id: 'mannheim-innenstadt',
+    name: 'Polizeirevier Mannheim-Innenstadt',
+    praesidiumId: 'mannheim',
+    coordinates: [8.4660, 49.4875] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[8.45, 49.47], [8.47, 49.47], [8.47, 49.50], [8.45, 49.50], [8.45, 49.47]]],
+    },
+    contact: {
+      phone: '+49 621 174-0',
+      email: 'innenstadt@polizei.bwl.de',
+      address: 'M1 1, 68161 Mannheim',
+    },
+  },
+  {
+    id: 'mannheim-neckarau',
+    name: 'Polizeirevier Mannheim-Neckarau',
+    praesidiumId: 'mannheim',
+    coordinates: [8.5000, 49.4700] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[8.49, 49.46], [8.51, 49.46], [8.51, 49.48], [8.49, 49.48], [8.49, 49.46]]],
+    },
+    contact: {
+      phone: '+49 621 174-100',
+      email: 'neckarau@polizei.bwl.de',
+      address: 'Neckarauer Straße 25, 68199 Mannheim',
+    },
+  },
+  {
+    id: 'mannheim-schwetzingerstadt',
+    name: 'Polizeirevier Mannheim-Schwetzingerstadt',
+    praesidiumId: 'mannheim',
+    coordinates: [8.4400, 49.5000] as [number, number],
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[[8.43, 49.49], [8.45, 49.49], [8.45, 49.51], [8.43, 49.51], [8.43, 49.49]]],
+    },
+    contact: {
+      phone: '+49 621 174-200',
+      email: 'schwetzingerstadt@polizei.bwl.de',
+      address: 'Schwetzinger Straße 8, 68165 Mannheim',
+    },
+  },
+];
+
+// API Functions
+export const searchPraesidien = async (query: string): Promise<Praesidium[]> => {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  if (!query.trim()) return MOCK_PRAESIDIEN;
+  
+  return MOCK_PRAESIDIEN.filter(praesidium =>
+    praesidium.name.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
+export const getReviereByPraesidium = async (praesidiumId: string): Promise<Revier[]> => {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  
+  return MOCK_REVIERE.filter(revier => revier.praesidiumId === praesidiumId);
+};
+
+export const calculateRoutes = async (
+  startCoords: Coordinates,
+  targets: Revier[]
+): Promise<RouteResult[]> => {
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  return targets.map((target) => ({
+    id: target.id,
+    name: target.name,
+    distance: Math.random() * 50 + 5,
+    duration: Math.round(Math.random() * 60 + 10),
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        startCoords,
+        target.coordinates,
+      ],
+    },
+    alternatives: [
+      {
+        distance: Math.random() * 50 + 5,
+        duration: Math.round(Math.random() * 60 + 10),
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            startCoords,
+            target.coordinates,
+          ],
+        },
+      },
+    ],
+  })).sort((a, b) => a.distance - b.distance);
+};
+
+export const geocodeAddress = async (address: string): Promise<z.infer<typeof GeocodingResponseSchema>> => {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&countrycodes=de&limit=1`
+  );
+  
+  if (!response.ok) {
+    throw new Error('Geocoding failed');
+  }
+  
+  const data = await response.json();
+  if (!data || data.length === 0) {
+    throw new Error('No results found');
+  }
+  
+  return GeocodingResponseSchema.parse(data[0]);
+};
+
+// React Query Hooks
+export const usePraesidienSearch = (query: string) => {
+  return useQuery({
+    queryKey: ['praesidien', query],
+    queryFn: () => searchPraesidien(query),
+    enabled: query.length >= 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useReviereByPraesidium = (praesidiumId: string) => {
+  return useQuery({
+    queryKey: ['reviere', praesidiumId],
+    queryFn: () => getReviereByPraesidium(praesidiumId),
+    enabled: !!praesidiumId,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useRouteCalculation = (
+  startCoords: Coordinates | undefined,
+  targets: Revier[]
+) => {
+  return useQuery({
+    queryKey: ['routes', startCoords, targets.map(t => t.id)],
+    queryFn: () => calculateRoutes(startCoords!, targets),
+    enabled: !!startCoords && targets.length > 0,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useGeocoding = (address: string) => {
+  return useQuery({
+    queryKey: ['geocoding', address],
+    queryFn: () => geocodeAddress(address),
+    enabled: address.length >= 3,
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
+  });
+};
+
+// Mutations
+export const useSaveRoute = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (route: RouteResult) => {
+      // Simulate saving to backend
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return route;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['saved-routes'] });
+    },
+  });
+};
+
+export const useExportRoutes = () => {
+  return useMutation({
+    mutationFn: async (routes: RouteResult[]) => {
+      // Simulate export process
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Generate CSV content
+      const csvContent = [
+        'Name,Distance (km),Duration (min)',
+        ...routes.map(route => `${route.name},${route.distance.toFixed(1)},${route.duration}`),
+      ].join('\n');
+      
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `routes-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      return routes;
+    },
+  });
+};
+
+// Utility Functions
+export const formatDistance = (distance: number): string => {
+  return `${distance.toFixed(1)} km`;
+};
+
+export const formatDuration = (duration: number): string => {
+  const hours = Math.floor(duration / 60);
+  const minutes = duration % 60;
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}min`;
+  }
+  return `${minutes} min`;
+};
+
+export const calculateBoundingBox = (coordinates: Coordinates[]): [Coordinates, Coordinates] => {
+  if (coordinates.length === 0) {
+    return [[0, 0], [0, 0]];
+  }
+  
+  const lats = coordinates.map(coord => coord[1]);
+  const lngs = coordinates.map(coord => coord[0]);
+  
+  return [
+    [Math.min(...lngs), Math.min(...lats)],
+    [Math.max(...lngs), Math.max(...lats)],
+  ];
+}; 

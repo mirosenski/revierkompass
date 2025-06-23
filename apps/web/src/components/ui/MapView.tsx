@@ -1,83 +1,35 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
-import maplibregl from 'maplibre-gl'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Loader2, Navigation, ZoomIn, ZoomOut, Home, Layers } from 'lucide-react'
-import { useMapStore } from '@/stores/map'
-import { calculateRoute, decodePolyline, formatDistance, formatDuration } from '@/services/osrm'
-import { cn } from '@/lib/utils'
-import { useDebounce } from '@/hooks/useDebounce'
+import { useEffect, useRef, useState } from "react";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { RouteResult } from "@/stores/wizard";
 
 interface MapViewProps {
-  startCoordinates?: [number, number]
-  destinations: Array<{
-    id: string
-    name: string
-    coordinates: [number, number]
-    address?: string
-  }>
-  className?: string
-  onRouteCalculated?: (route: {
-    distance: number
-    duration: number
-    geometry: number[][]
-  }) => void
+  startCoordinates?: [number, number];
+  destinations?: Array<{
+    id: string;
+    name: string;
+    coordinates: [number, number];
+    address: string;
+  }>;
+  routes?: RouteResult[];
 }
 
-export function MapView({
-  startCoordinates,
-  destinations,
-  className,
-  onRouteCalculated,
-}: MapViewProps) {
-  const mapContainer = useRef<HTMLDivElement>(null)
-  const mapInstance = useRef<maplibregl.Map | null>(null)
-  const [isMapReady, setIsMapReady] = useState(false)
-  const [routeInfo, setRouteInfo] = useState<{
-    distance: number
-    duration: number
-  } | null>(null)
-  const [isCalculatingRoute, setIsCalculatingRoute] = useState(false)
-  const [routeError, setRouteError] = useState<string | null>(null)
-  
-  const { setMap, layersVisibility, toggleLayer } = useMapStore()
-  
-  // Debounce props to avoid flickering/re-calc on rapid user input
-  const debouncedStartCoordinates = useDebounce(startCoordinates, 500)
-  const debouncedDestinations = useDebounce(destinations, 500)
+export function MapView({ startCoordinates, destinations = [], routes = [] }: MapViewProps) {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<maplibregl.Map | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
-  // Create a single, stable key from ALL data points to robustly detect real changes.
-  // This is the definitive fix for the re-render loop.
-  const dataKey = useMemo(() => {
-    const startKey = debouncedStartCoordinates ? debouncedStartCoordinates.join(',') : 'no-start'
-    const destsKey = debouncedDestinations?.map(d => d.id).sort().join(',') || 'no-dests'
-    return `${startKey}|${destsKey}`
-  }, [debouncedStartCoordinates, debouncedDestinations])
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
 
-  // Keep a stable reference to the callback to prevent effect re-runs
-  const onRouteCalculatedRef = useRef(onRouteCalculated)
-  useEffect(() => {
-    onRouteCalculatedRef.current = onRouteCalculated
-  }, [onRouteCalculated])
-  
-  // Initialize map only once
-  useEffect(() => {
-    if (!mapContainer.current || mapInstance.current) return
-    
-    // Create map with preserveDrawingBuffer to prevent flickering
-    mapInstance.current = new maplibregl.Map({
+    map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: {
         version: 8,
         sources: {
-          'osm-tiles': {
+          'osm': {
             type: 'raster',
-            tiles: [
-              'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            ],
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             tileSize: 256,
             attribution: '© OpenStreetMap contributors',
           },
@@ -86,360 +38,197 @@ export function MapView({
           {
             id: 'osm-tiles',
             type: 'raster',
-            source: 'osm-tiles',
+            source: 'osm',
             minzoom: 0,
-            maxzoom: 19,
+            maxzoom: 22,
           },
         ],
       },
-      center: [8.6821, 50.1109], // Frankfurt
-      zoom: 6,
-      minZoom: 5,
-      maxZoom: 18,
-      // Important: Prevent flickering
-      fadeDuration: 0,
-    })
-    
-    // Add controls
-    mapInstance.current.addControl(new maplibregl.NavigationControl(), 'top-right')
-    mapInstance.current.addControl(
-      new maplibregl.ScaleControl({
-        maxWidth: 200,
-        unit: 'metric',
-      }),
-      'bottom-left'
-    )
-    
-    // Set bounds to Germany
-    const bounds = new maplibregl.LngLatBounds(
-      [5.9, 47.3], // SW
-      [15.0, 55.0]  // NE
-    )
-    mapInstance.current.setMaxBounds(bounds)
-    
-    // Store map instance
-    setMap(mapInstance.current)
-    
-    // Map ready event
-    mapInstance.current.on('load', () => {
-      setIsMapReady(true)
-      
-      // Add layers after map is loaded
-      if (mapInstance.current) {
-        // Route layer
-        mapInstance.current.addSource('route', {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: [],
-            },
-          },
-        })
-        
-        mapInstance.current.addLayer({
-          id: 'route-outline',
-          type: 'line',
-          source: 'route',
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round',
-          },
-          paint: {
-            'line-color': '#1e40af',
-            'line-width': 6,
-            'line-opacity': 0.4,
-          },
-        })
-        
-        mapInstance.current.addLayer({
-          id: 'route',
-          type: 'line',
-          source: 'route',
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round',
-          },
-          paint: {
-            'line-color': '#3b82f6',
-            'line-width': 4,
-            'line-opacity': 0.8,
-          },
-        })
-      }
-    })
-    
-    // Cleanup
+      center: startCoordinates || [9.1829, 48.7758], // Stuttgart default
+      zoom: 10,
+    });
+
+    map.current.on('load', () => {
+      setMapLoaded(true);
+    });
+
     return () => {
-      if (mapInstance.current) {
-        mapInstance.current.remove()
-        mapInstance.current = null
-        setMap(null)
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
       }
-    }
-  }, [setMap])
-  
-  // Master effect for all map updates (markers, route, bounds)
-  // This is the core of the optimization, preventing re-renders from prop reference changes.
+    };
+  }, [startCoordinates]);
+
+  // Add start marker
   useEffect(() => {
-    if (!mapInstance.current || !isMapReady) return
+    if (!map.current || !mapLoaded || !startCoordinates) return;
 
-    const map = mapInstance.current
-
-    // --- 1. Update Markers & Bounds ---
-    const markers = document.querySelectorAll('.maplibregl-marker')
-    markers.forEach(marker => marker.remove())
-    
-    const allCoords: Array<[number, number]> = []
-    
-    if (debouncedStartCoordinates) {
-      new maplibregl.Marker({ color: '#10b981' })
-        .setLngLat(debouncedStartCoordinates)
-        .setPopup(new maplibregl.Popup().setHTML('<strong>Startpunkt</strong>'))
-        .addTo(map)
-      allCoords.push(debouncedStartCoordinates)
+    // Remove existing start marker
+    const existingStartMarker = document.getElementById('start-marker');
+    if (existingStartMarker) {
+      existingStartMarker.remove();
     }
 
-    debouncedDestinations.forEach((dest, index) => {
-      const marker = new maplibregl.Marker({ color: '#3b82f6' })
-        .setLngLat(dest.coordinates)
-        .setPopup(
-          new maplibregl.Popup().setHTML(
-            `<div class="p-2"><strong>${dest.name}</strong>${
-              dest.address ? `<br><small>${dest.address}</small>` : ''
-            }</div>`,
-          ),
-        )
-        .addTo(map)
-
-      const el = marker.getElement()
-      if (el) {
-        const label = document.createElement('div')
-        label.className = 'absolute -top-2 -right-2 bg-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-blue-500 shadow-sm'
-        label.textContent = (index + 1).toString()
-        el.appendChild(label)
-      }
-      allCoords.push(dest.coordinates)
+    // Add new start marker
+    const startMarker = new maplibregl.Marker({
+      element: createMarkerElement('start', 'Start'),
+      color: '#3b82f6',
     })
+      .setLngLat(startCoordinates)
+      .addTo(map.current);
 
-    if (allCoords.length > 0) {
-      const bounds = new maplibregl.LngLatBounds()
-      allCoords.forEach(coord => bounds.extend(coord))
-      map.fitBounds(bounds, {
-        padding: 100,
-        duration: 500, // Shorter animation
+    // Store reference for cleanup
+    startMarker.getElement().id = 'start-marker';
+  }, [startCoordinates, mapLoaded]);
+
+  // Add destination markers
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    // Remove existing destination markers
+    const existingMarkers = document.querySelectorAll('.destination-marker');
+    existingMarkers.forEach(marker => marker.remove());
+
+    destinations.forEach((destination, index) => {
+      const marker = new maplibregl.Marker({
+        element: createMarkerElement('destination', `${index + 1}`),
+        color: '#ef4444',
       })
-    }
+        .setLngLat(destination.coordinates)
+        .addTo(map.current!);
 
-    // --- 2. Calculate and Display Route ---
-    const calculateAndDisplayRoute = async () => {
-      if (!debouncedStartCoordinates || debouncedDestinations.length === 0) {
-        return
+      marker.getElement().classList.add('destination-marker');
+    });
+  }, [destinations, mapLoaded]);
+
+  // Add route lines
+  useEffect(() => {
+    if (!map.current || !mapLoaded || routes.length === 0) return;
+
+    // Remove existing route sources and layers
+    const existingSources = ['route-1', 'route-2', 'route-3'];
+    existingSources.forEach(sourceId => {
+      if (map.current!.getSource(sourceId)) {
+        map.current!.removeLayer(`${sourceId}-layer`);
+        map.current!.removeSource(sourceId);
       }
+    });
 
-      setIsCalculatingRoute(true)
-      setRouteError(null)
+    // Add route lines
+    routes.forEach((route, index) => {
+      if (!route.geometry) return;
 
-      try {
-        const waypoints: Array<[number, number]> = [
-          debouncedStartCoordinates,
-          ...debouncedDestinations.map(d => d.coordinates),
-        ]
-        
-        const response = await calculateRoute(waypoints, {
-          overview: 'full',
-          steps: true,
-        })
+      const sourceId = `route-${index + 1}`;
+      const layerId = `${sourceId}-layer`;
 
-        if (response.code !== 'Ok' || response.routes.length === 0) {
-          throw new Error('Keine Route gefunden')
-        }
-
-        const route = response.routes[0]
-        const geometry = decodePolyline(route.geometry)
-
-        const source = map.getSource('route') as maplibregl.GeoJSONSource
-        if (source) {
-          source.setData({
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: geometry,
-            },
-          })
-        }
-        
-        const routeData = {
-          distance: route.distance,
-          duration: route.duration,
-        }
-        setRouteInfo(routeData)
-        onRouteCalculatedRef.current?.({ ...routeData, geometry })
-
-      } catch (err) {
-        console.error('Route calculation error:', err)
-        setRouteError('Routenberechnung fehlgeschlagen.')
-        const source = map.getSource('route') as maplibregl.GeoJSONSource
-        if (source) {
-          source.setData({
-            type: 'Feature',
-            properties: {},
-            geometry: { type: 'LineString', coordinates: [] },
-          })
-        }
-        setRouteInfo(null)
-      } finally {
-        setIsCalculatingRoute(false)
-      }
-    }
-
-    if (layersVisibility.route) {
-      calculateAndDisplayRoute()
-    } else {
-      // Clear route if visibility is off
-      const source = map.getSource('route') as maplibregl.GeoJSONSource
-      if (source) {
-        source.setData({
+      map.current!.addSource(sourceId, {
+        type: 'geojson',
+        data: {
           type: 'Feature',
           properties: {},
-          geometry: { type: 'LineString', coordinates: [] },
-        })
-      }
-      setRouteInfo(null)
+          geometry: {
+            type: 'LineString' as const,
+            coordinates: route.geometry.coordinates,
+          },
+        },
+      });
+
+      map.current!.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': getRouteColor(index),
+          'line-width': 4,
+          'line-opacity': 0.8,
+        },
+      });
+    });
+
+    // Fit map to show all routes
+    if (routes.length > 0 && startCoordinates) {
+      const coordinates = [startCoordinates, ...destinations.map(d => d.coordinates)];
+      const bounds = new maplibregl.LngLatBounds();
+      coordinates.forEach(coord => bounds.extend(coord));
+      
+      map.current.fitBounds(bounds, {
+        padding: 50,
+        duration: 1000,
+      });
     }
-  }, [dataKey, isMapReady, layersVisibility.route])
-  
-  // Toggle route visibility
-  useEffect(() => {
-    if (!mapInstance.current || !isMapReady) return
-    
-    const visibility = layersVisibility.route ? 'visible' : 'none'
-    mapInstance.current.setLayoutProperty('route', 'visibility', visibility)
-    mapInstance.current.setLayoutProperty('route-outline', 'visibility', visibility)
-  }, [layersVisibility.route, isMapReady])
-  
-  // Control handlers
-  const handleZoomIn = useCallback(() => {
-    mapInstance.current?.zoomIn()
-  }, [])
-  
-  const handleZoomOut = useCallback(() => {
-    mapInstance.current?.zoomOut()
-  }, [])
-  
-  const handleResetView = useCallback(() => {
-    if (!mapInstance.current || (!startCoordinates && destinations.length === 0)) return
-    
-    const coords: number[][] = []
-    if (startCoordinates) coords.push(startCoordinates)
-    coords.push(...destinations.map(d => d.coordinates))
-    
-    const bounds = new maplibregl.LngLatBounds()
-    coords.forEach(coord => bounds.extend(coord as [number, number]))
-    
-    mapInstance.current.fitBounds(bounds, {
-      padding: 100,
-      duration: 1000,
-    })
-  }, [startCoordinates, destinations])
-  
-  return (
-    <Card className={cn('relative overflow-hidden', className)}>
-      <div 
-        ref={mapContainer} 
-        className="h-full w-full"
-        style={{ 
-          // Prevent flickering with CSS
-          backfaceVisibility: 'hidden',
-          perspective: 1000,
-          transform: 'translateZ(0)',
-        }}
-      />
-      
-      {/* Loading overlay */}
-      {!isMapReady && (
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Karte wird geladen...</p>
-          </div>
+  }, [routes, startCoordinates, destinations, mapLoaded]);
+
+  const createMarkerElement = (type: 'start' | 'destination', label: string) => {
+    const el = document.createElement('div');
+    el.className = 'marker-element';
+    el.innerHTML = `
+      <div class="relative">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ${
+          type === 'start' ? 'bg-blue-500' : 'bg-red-500'
+        }">
+          ${label}
         </div>
-      )}
-      
-      {/* Custom controls */}
-      <div className="absolute top-4 left-4 flex flex-col gap-2">
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={handleZoomIn}
-          className="h-8 w-8 shadow-lg"
-        >
-          <ZoomIn className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={handleZoomOut}
-          className="h-8 w-8 shadow-lg"
-        >
-          <ZoomOut className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={handleResetView}
-          className="h-8 w-8 shadow-lg"
-        >
-          <Home className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant={layersVisibility.route ? 'default' : 'secondary'}
-          onClick={() => toggleLayer('route')}
-          className="h-8 w-8 shadow-lg"
-          disabled={isCalculatingRoute}
-        >
-          <Layers className="h-4 w-4" />
-        </Button>
+        <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent ${
+          type === 'start' ? 'border-t-blue-500' : 'border-t-red-500'
+        }"></div>
       </div>
+    `;
+    return el;
+  };
+
+  const getRouteColor = (index: number) => {
+    const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
+    return colors[index % colors.length];
+  };
+
+  return (
+    <div className="relative w-full h-full">
+      <div ref={mapContainer} className="w-full h-full" />
       
-      {/* Route info */}
-      {routeInfo && layersVisibility.route && (
-        <Card className="absolute bottom-4 left-4 p-4 shadow-lg">
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Navigation className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{formatDistance(routeInfo.distance)}</span>
-            </div>
-            <div className="text-muted-foreground">•</div>
-            <div className="flex items-center gap-2">
-              <span className="font-medium">{formatDuration(routeInfo.duration)}</span>
-            </div>
-          </div>
-        </Card>
-      )}
-      
-      {/* Route calculation loading */}
-      {isCalculatingRoute && layersVisibility.route && (
-        <Card className="absolute bottom-4 right-4 p-3 shadow-lg">
-          <div className="flex items-center gap-2 text-sm">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-muted-foreground">Route wird berechnet...</span>
-          </div>
-        </Card>
-      )}
-      
-      {/* Route error */}
-      {routeError && (
-        <div className="absolute top-4 right-4 max-w-sm">
-          <Card className="border-destructive bg-destructive/10 p-3">
-            <p className="text-sm text-destructive">{routeError}</p>
-          </Card>
+      {/* Map Controls */}
+      {mapLoaded && (
+        <div className="absolute top-4 right-4 space-y-2">
+          <button
+            onClick={() => map.current?.zoomIn()}
+            className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </button>
+          <button
+            onClick={() => map.current?.zoomOut()}
+            className="w-10 h-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+          </button>
         </div>
       )}
-    </Card>
-  )
+
+      {/* Legend */}
+      {routes.length > 0 && (
+        <div className="absolute bottom-4 left-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
+          <h4 className="text-sm font-medium mb-2">Routen</h4>
+          <div className="space-y-1">
+            {routes.slice(0, 3).map((route, index) => (
+              <div key={route.id} className="flex items-center space-x-2">
+                <div
+                  className="w-4 h-2 rounded"
+                  style={{ backgroundColor: getRouteColor(index) }}
+                />
+                <span className="text-xs">{route.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 } 
