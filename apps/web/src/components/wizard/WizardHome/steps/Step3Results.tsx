@@ -18,8 +18,15 @@ import { useState } from "react";
 import { useWizardStore } from "@/stores/wizard";
 import { useExportRoutes, formatDistance, formatDuration } from "@/services/wizard";
 import type { RouteResult } from "@/stores/wizard";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+
+declare module "jspdf" {
+    interface jsPDF {
+        // biome-ignore lint/suspicious/noExplicitAny: third-party definition
+        autoTable: (options: any) => jsPDF;
+    }
+}
 
 interface Step3ResultsProps {
 	results: RouteResult[];
@@ -67,7 +74,8 @@ export function Step3Results({ results, loading }: Step3ResultsProps) {
 			formatDuration(result.duration),
 		]);
 
-		(doc as any).autoTable({
+                // biome-ignore lint/suspicious/noExplicitAny: library augmentation
+                (doc as any).autoTable({
 			startY: 60,
 			head: [["#", "Ziel", "Distanz", "Dauer"]],
 			body: tableData,
@@ -248,13 +256,13 @@ export function Step3Results({ results, loading }: Step3ResultsProps) {
 													Alternative Routen:
 												</h4>
 												<div className="space-y-2">
-													{result.alternatives.slice(0, 3).map((alt, altIndex) => (
-														<div
-															key={altIndex}
-															className="flex items-center justify-between text-sm"
-														>
-															<span className="text-gray-600 dark:text-gray-400">
-																Alternative {altIndex + 1}
+                                                                        {result.alternatives.slice(0, 3).map((alt, altIndex) => (
+                                                                                <div
+                                                                                        key={`${result.id}-${alt.id}`}
+                                                                                        className="flex items-center justify-between text-sm"
+                                                                                >
+                                                                                        <span className="text-gray-600 dark:text-gray-400">
+                                                                                                Alternative {altIndex + 1}
 															</span>
 															<div className="flex items-center gap-4">
 																<span className="text-blue-600 dark:text-blue-400">

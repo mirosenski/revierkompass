@@ -182,10 +182,11 @@ export function VirtualizedHierarchy({
 							animate={{ opacity: 1, x: 0 }}
 							className="bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700"
 						>
-							<button
-								onClick={() => togglePraesidium(praesidium.id)}
-								className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors rounded-lg"
-							>
+                                        <button
+                                                type="button"
+                                                onClick={() => togglePraesidium(praesidium.id)}
+                                                className="w-full flex items-center justify-between p-4 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors rounded-lg"
+                                        >
 								<div className="flex items-center gap-3">
 									<Building2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
 									<div className="text-left">

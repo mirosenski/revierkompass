@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Map } from "maplibre-gl";
+import type { Map as MaplibreMap } from "maplibre-gl";
 
 // Types
 export interface ViewportState {
@@ -101,7 +101,7 @@ export function useMapConfig() {
 }
 
 // Map Instance Management
-let mapInstance: Map | null = null;
+let mapInstance: MaplibreMap | null = null;
 
 export function useMapInstance() {
 	const queryClient = useQueryClient();
@@ -113,8 +113,8 @@ export function useMapInstance() {
 		gcTime: Infinity,
 	});
 
-	const setMapInstance = useMutation({
-		mutationFn: async (map: Map | null) => {
+        const setMapInstance = useMutation({
+                mutationFn: async (map: MaplibreMap | null) => {
 			mapInstance = map;
 			return map;
 		},

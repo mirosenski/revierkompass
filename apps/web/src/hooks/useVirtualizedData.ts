@@ -37,7 +37,7 @@ interface UseVirtualizedDataReturn<T> {
 	isSelected: (item: T) => boolean;
 }
 
-export function useVirtualizedData<T extends Record<string, any>>({
+export function useVirtualizedData<T extends Record<string, unknown>>({
 	data,
 	searchKeys = [],
 	itemsPerPage = 50,
@@ -94,9 +94,9 @@ export function useVirtualizedData<T extends Record<string, any>>({
 	}, [sortedData, currentPage, itemsPerPage]);
 
 	// Reset to page 1 when search changes
-	useEffect(() => {
-		setCurrentPage(1);
-	}, [debouncedSearchQuery]);
+        useEffect(() => {
+                setCurrentPage(1);
+        }, []);
 
 	// Pagination handlers
 	const goToPage = useCallback(

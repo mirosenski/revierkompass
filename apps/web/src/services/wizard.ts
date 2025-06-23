@@ -343,7 +343,10 @@ export const useReviereByPraesidium = (praesidiumId: string) => {
 export const useRouteCalculation = (startCoords: Coordinates | undefined, targets: Revier[]) => {
 	return useQuery({
 		queryKey: ["routes", startCoords, targets.map((t) => t.id)],
-		queryFn: () => calculateRoutes(startCoords!, targets),
+                queryFn: () => {
+                        if (!startCoords) throw new Error("Start coordinates required");
+                        return calculateRoutes(startCoords, targets);
+                },
 		enabled: !!startCoords && targets.length > 0,
 		staleTime: 2 * 60 * 1000, // 2 minutes
 		gcTime: 5 * 60 * 1000, // 5 minutes

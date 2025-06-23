@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, subscribeWithSelector } from "zustand/middleware";
-import type { Map } from "maplibre-gl";
+import type { Map as MaplibreMap } from "maplibre-gl";
 
 interface DrawnFeature {
 	id: string;
@@ -9,13 +9,13 @@ interface DrawnFeature {
 		type: "Point" | "LineString" | "Polygon";
 		coordinates: number[] | number[][] | number[][][];
 	};
-	properties: Record<string, any>;
+        properties: Record<string, unknown>;
 }
 
 interface MapState {
 	// Map instance
-	map: Map | null;
-	setMap: (map: Map | null) => void;
+        map: MaplibreMap | null;
+        setMap: (map: MaplibreMap | null) => void;
 
 	// View state
 	center: [number, number];
@@ -41,7 +41,7 @@ interface MapState {
 		id: string;
 		type: "distance" | "area";
 		value: number;
-		geometry: any;
+                geometry: unknown;
 	}>;
 
 	// Actions
