@@ -1,9 +1,0 @@
-export { WizardStep1 } from "./WizardStep1";
-export { WizardStep2 } from "./WizardStep2";
-export { WizardStep2Optimized } from "./WizardStep2Optimized";
-export { WizardStep2Modern } from "./WizardStep2Modern";
-export { WizardStep2Advanced } from "./WizardStep2Advanced";
-export { WizardStep2PerformanceTest } from "./WizardStep2PerformanceTest";
-export { WizardStep3 } from "./WizardStep3";
-export { WizardControls } from "./WizardControls";
-export { RevierCard } from "./RevierCard";
