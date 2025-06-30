@@ -7,7 +7,7 @@ Eine moderne Web-Anwendung zur Verwaltung und Navigation von Polizeistationen in
 **1. Repository klonen**
 ```bash
 git clone <repo-url>
-cd revierkompass-v6
+cd revierkompass
 ```
 
 **2. Abhängigkeiten installieren**
