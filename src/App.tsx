@@ -9,9 +9,10 @@ import WizardContainer from '@/components/wizard/WizardContainer';
 import LoginForm from '@/components/auth/LoginForm';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import TestImport from '@/pages/TestImport';
+import LogoTestPage from '@/components/logo/LogoTestPage';
 
 function App() {
-  const [currentView, setCurrentView] = useState<'wizard' | 'login' | 'admin' | 'test'>('wizard');
+  const [currentView, setCurrentView] = useState<'wizard' | 'login' | 'admin' | 'test' | 'logo-test'>('wizard');
   const { isDarkMode, setWizardStep } = useAppStore();
   const { isAuthenticated, isAdmin } = useAuthStore();
 
@@ -21,6 +22,9 @@ function App() {
     if (window.location.hash === '#test') {
       setCurrentView('test');
       console.log('🚀 Test-Seite aktiviert via URL');
+    } else if (window.location.hash === '#logo-test') {
+      setCurrentView('logo-test');
+      console.log('🎨 Logo-Test-Seite aktiviert via URL');
     } else {
       setCurrentView('wizard');
       setWizardStep(1);
@@ -88,7 +92,7 @@ function App() {
     }
   };
 
-  const handleBreadcrumbNavigation = (view: 'wizard' | 'login' | 'admin' | 'test', step?: number) => {
+  const handleBreadcrumbNavigation = (view: 'wizard' | 'login' | 'admin' | 'test' | 'logo-test', step?: number) => {
     console.log('Breadcrumb Navigation:', view, step);
     setCurrentView(view);
     
@@ -120,6 +124,7 @@ function App() {
         {currentView === 'login' && <LoginForm onSuccess={handleLoginSuccess} />}
         {currentView === 'admin' && isAuthenticated && <AdminDashboard />}
         {currentView === 'test' && <TestImport />}
+        {currentView === 'logo-test' && <LogoTestPage />}
       </main>
       
       <Footer />

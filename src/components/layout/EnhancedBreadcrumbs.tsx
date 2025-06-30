@@ -5,8 +5,8 @@ import { useAppStore } from '@/lib/store/app-store';
 import { useAuthStore } from '@/lib/store/auth-store';
 
 interface BreadcrumbsProps {
-  currentView: 'wizard' | 'login' | 'admin' | 'test';
-  onNavigate?: (view: 'wizard' | 'login' | 'admin' | 'test', step?: number) => void;
+  currentView: 'wizard' | 'login' | 'admin' | 'test' | 'logo-test';
+  onNavigate?: (view: 'wizard' | 'login' | 'admin' | 'test' | 'logo-test', step?: number) => void;
 }
 
 interface BreadcrumbItem {
@@ -14,7 +14,7 @@ interface BreadcrumbItem {
   icon?: React.ComponentType<any>;
   active: boolean;
   clickable: boolean;
-  view?: 'wizard' | 'login' | 'admin' | 'test';
+  view?: 'wizard' | 'login' | 'admin' | 'test' | 'logo-test';
   step?: number;
   mobile?: boolean; // Für Mobile-optimierte Darstellung
 }
@@ -100,6 +100,21 @@ const EnhancedBreadcrumbs: React.FC<BreadcrumbsProps> = ({ currentView, onNaviga
       });
       items.push({ 
         label: 'Test Import', 
+        icon: undefined, 
+        active: true,
+        clickable: false
+      });
+    } else if (currentView === 'logo-test') {
+      items.push({ 
+        label: 'RevierKompass', 
+        icon: Home, 
+        active: false,
+        clickable: true,
+        view: 'wizard',
+        step: 1
+      });
+      items.push({ 
+        label: 'Logo Test', 
         icon: undefined, 
         active: true,
         clickable: false

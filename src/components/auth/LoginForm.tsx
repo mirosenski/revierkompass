@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { Shield, User, Lock, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '@/lib/store/auth-store';
 import toast from 'react-hot-toast';
+import Logo from '@/components/ui/Logo';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -91,13 +92,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl blur-lg opacity-30"></div>
-              <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 p-6 rounded-3xl shadow-xl">
-                <Shield className="h-12 w-12 text-white" />
-              </div>
-            </div>
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <Logo size="lg" showText={false} animated={true} />
           </div>
           
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
