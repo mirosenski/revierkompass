@@ -2,7 +2,7 @@
 
 Eine moderne Web-Anwendung zur Verwaltung und Navigation von Polizeistationen in Baden-Württemberg.
 
-## 🚀 Schnellstart für alle (auch Kollegen)
+## 🚀 Schnellstart
 
 **1. Repository klonen**
 ```bash
