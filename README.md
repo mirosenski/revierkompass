@@ -15,128 +15,75 @@ cd revierkompass
 pnpm install
 ```
 
-**3. Alles starten (Backend, DB, Frontend):**
+**3. Umgebungsvariablen konfigurieren**
+```bash
+cp env.example .env
+# .env-Datei bei Bedarf anpassen
+```
+
+**4. Anwendung starten**
 ```bash
 pnpm run dev
 ```
 
-**Fertig!**
-- ✅ Backend läuft automatisch auf Port 3001
-- ✅ Frontend auf Port 5173/5174 (automatisch gewählt)
-- ✅ Datenbank & Seed werden automatisch eingerichtet
-- ✅ Keine weitere Konfiguration nötig!
+**5. Stationen importieren**
+Nach dem Start der Anwendung:
+- Admin-Bereich öffnen
+- Tab "Import" wählen
+- "Alle Stationen importieren" klicken
+- Stationen aus `/src/data` werden in die Datenbank importiert
 
-## 🚀 Schnellstart
+## 🗺️ Offline-Karten (Optional)
 
-### Automatischer Start (Empfohlen)
+Für vollständige Offline-Funktionalität mit echten Straßenrouten:
+
 ```bash
-npm start
-```
-Dies startet automatisch:
-- Backend-Server auf Port 3001
-- Frontend-Server auf Port 5173 (oder höher)
-
-### Manueller Start
-```bash
-# Backend starten
-cd backend && node server.js
-
-# Frontend starten (in neuem Terminal)
-npm run dev
+cd backend
+docker-compose -f docker-compose-tiles.yml up -d
 ```
 
-## 📁 Projektstruktur
-
-```
-revierkompass-v6/
-├── backend/
-│   ├── simple-server.js        # Express.js Backend
-│   ├── prisma/                 # Datenbank-Schema
-│   │   └── schema.prisma       # SQLite Schema
-│   ├── src/scripts/            # Import & Seed Scripts
-│   └── package.json
-├── src/
-│   ├── components/
-│   │   ├── wizard/             # Wizard-Komponenten
-│   │   │   └── Step3PremiumExport.tsx  # Routenberechnung
-│   │   ├── map/                # Karten-Komponenten
-│   │   └── admin/              # Admin-Komponenten
-│   ├── lib/services/           # Services
-│   │   └── routing-service.ts  # Echte Straßenrouten
-│   └── store/                  # Zustand-Management
-├── start-all.sh                # Automatisches Start-Skript
-└── package.json
-```
+Dies startet:
+- **PostgreSQL** mit PostGIS (Port 5432)
+- **TileServer GL** für Offline-Karten (Port 8080)
+- **OSRM** für Routing (Port 5000)
+- **Valhalla** für erweiterte Routen (Port 8002)
+- **Nominatim** für Offline-Geocoding (Port 8001)
+- **Redis** für Caching (Port 6379)
 
 ## 🔧 Technologien
 
 - **Frontend**: React 18, TypeScript, Vite
 - **Backend**: Node.js, Express, Prisma
-- **Datenbank**: SQLite mit Prisma ORM
-- **Routing**: Echte Straßenrouten (OSRM, Valhalla, GraphHopper)
-- **Karten**: MapLibre GL mit interaktiven Routen
-- **Styling**: Tailwind CSS, Radix UI
-- **State Management**: Zustand
+- **Datenbank**: SQLite (Entwicklung) / PostgreSQL mit PostGIS (Produktion)
+- **Routing**: Echte Straßenrouten (OSRM, Valhalla)
+- **Karten**: MapLibre GL mit Offline-Support
+- **Docker**: Vollständige Containerisierung verfügbar
 
 ## 📊 Features
 
-- ✅ **Echte Straßenrouten** statt Luftlinien
-- ✅ **Interaktive Karten** mit MapLibre GL
-- ✅ **Automatisches Start-System** (Backend + Frontend)
-- ✅ **SQLite-Datenbank** mit Prisma ORM
-- ✅ **Admin-Bereich** für Stationenverwaltung
-- ✅ **Custom-Adressen** mit Koordinaten
-- ✅ **Responsive Design**
-- ✅ **Offline-Karten** Support
+- ✅ Echte Straßenrouten statt Luftlinien
+- ✅ Interaktive Karten mit MapLibre GL
+- ✅ Admin-Bereich für Stationenverwaltung
+- ✅ Custom-Adressen mit Koordinaten
+- ✅ Responsive Design
+- ✅ Offline-Karten über Docker
+- ✅ JWT-Authentifizierung
 
-## 🛠️ Entwicklung
+## 🔑 Admin-Zugang
 
-### Neue Station hinzufügen
-1. Admin-Bereich öffnen (http://localhost:5174/admin)
-2. "Neue Station" klicken
-3. Daten eingeben und speichern
-
-### Routenberechnung
-- Verwendet echte Routing-APIs (OSRM, Valhalla, GraphHopper)
-- Zeigt Straßenrouten auf der Karte an
-- Fallback auf Luftlinie bei API-Problemen
-
-### Custom-Adressen
-- Werden in der SQLite-Datenbank gespeichert
-- Koordinaten werden automatisch geocodiert
-- Review-System für neue Adressen
-
-## 🚨 Troubleshooting
-
-### Automatischer Start funktioniert nicht
-```bash
-# Manuell starten
-cd backend && node simple-server.js
-# In neuem Terminal:
-pnpm dev
+Nach dem Start verfügbar:
+```
+Email: admin@revierkompass.de
+Passwort: admin123
 ```
 
-### Datenbank zurücksetzen
-```bash
-cd backend
-npx prisma db push --force-reset
-npx tsx src/scripts/seed.ts
-```
+## 🌐 Wichtige URLs & Ports
 
-### Ports bereits belegt
-- Das System wählt automatisch freie Ports
-- Backend: 3001 (fest)
-- Frontend: 5173, 5174, etc. (automatisch)
-
-## 📝 API Endpoints
-
-- `GET /health` - Health Check
-- `GET /api/stationen` - Alle Stationen
-- `POST /api/stationen` - Neue Station
-- `PUT /api/stationen/:id` - Station aktualisieren
-- `DELETE /api/stationen/:id` - Station löschen
-- `GET /api/addresses` - Alle Adressen
-- `POST /api/addresses` - Neue Adresse
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3001
+- **Admin-Bereich**: http://localhost:5173/admin
+- **TileServer**: http://localhost:8080 (Docker)
+- **OSRM Routing**: http://localhost:5000 (Docker)
 
 ## 📝 Lizenz
 
